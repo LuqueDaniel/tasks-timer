@@ -1,10 +1,10 @@
-import { safeUUID } from "./utils.js?v=20260111-3";
+import { safeUUID } from "./utils.js";
 import {
   nowMs,
   addDurationSplitByLocalDay,
   secondsInDateKeyBetween,
   elapsedSeconds,
-} from "./time.js?v=20260111-3";
+} from "./time.js";
 
 function normalizeTaskName(raw) {
   const s = String(raw ?? "")

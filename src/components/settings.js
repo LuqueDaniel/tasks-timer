@@ -1,7 +1,7 @@
-import { showToast } from "./toast.js?v=20260111-5";
-import { setLanguage, setTheme } from "../model.js?v=20260111-5";
-import { clearStoredState, defaultState, migrateState } from "../storage.js?v=20260111-5";
-import { nowMs, toLocalDateKey } from "../time.js?v=20260111-5";
+import { showToast } from "./toast.js";
+import { setLanguage, setTheme } from "../model.js";
+import { clearStoredState, defaultState, migrateState } from "../storage.js";
+import { nowMs, toLocalDateKey } from "../time.js";
 import { applyTranslations, setLanguage as setI18nLanguage, t } from "../i18n.js";
 
 function downloadJson(filename, data) {

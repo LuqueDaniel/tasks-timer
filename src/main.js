@@ -1,9 +1,9 @@
-import { createStore } from "./store.js?v=20260111-5";
-import { getDom } from "./dom.js?v=20260111-5";
-import { renderApp, renderLive } from "./render.js?v=20260111-5";
-import { showToast, showUndoToast, showUndoToastMessage, removeUndoToast } from "./components/toast.js?v=20260111-5";
-import { setupSettingsDialog } from "./components/settings.js?v=20260111-5";
-import { applyThemePreference } from "./theme.js?v=20260111-5";
+import { createStore } from "./store.js";
+import { getDom } from "./dom.js";
+import { renderApp, renderLive } from "./render.js";
+import { showToast, showUndoToast, showUndoToastMessage, removeUndoToast } from "./components/toast.js";
+import { setupSettingsDialog } from "./components/settings.js";
+import { applyThemePreference } from "./theme.js";
 import {
   addTask,
   startTask,
@@ -15,8 +15,8 @@ import {
   renameTask,
   restoreDeletedTask,
   restoreHistoryEntry,
-} from "./model.js?v=20260111-5";
-import { nowMs, toLocalDateKey, formatDateKeyForUser, formatHMS } from "./time.js?v=20260111-5";
+} from "./model.js";
+import { nowMs, toLocalDateKey, formatDateKeyForUser, formatHMS } from "./time.js";
 import { applyTranslations, detectLanguage, setLanguage as setI18nLanguage, t } from "./i18n.js";
 import { setupErrorReporting } from "./errorReporter.js";
 

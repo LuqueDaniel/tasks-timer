@@ -1,5 +1,5 @@
-import { formatDateKeyForUser, formatHMS } from "../time.js?v=20260111-5";
-import { computeTotalToday, getTask } from "../model.js?v=20260111-5";
+import { formatDateKeyForUser, formatHMS } from "../time.js";
+import { computeTotalToday, getTask } from "../model.js";
 import { t } from "../i18n.js";
 
 /**

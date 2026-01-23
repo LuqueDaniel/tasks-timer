@@ -1,4 +1,4 @@
-import { defaultState, loadState, saveState } from "./storage.js?v=20260111-5";
+import { defaultState, loadState, saveState } from "./storage.js";
 
 /**
  * Creates the app store.

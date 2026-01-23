@@ -1,9 +1,9 @@
-import { formatDateKeyForUser, formatDecimalHours, formatHMS } from "../time.js?v=20260111-5";
+import { formatDateKeyForUser, formatDecimalHours, formatHMS } from "../time.js";
 import {
   sortedHistoryEntries,
   taskTodaySeconds,
   taskTotalSecondsLive,
-} from "../model.js?v=20260111-5";
+} from "../model.js";
 import { applyTranslations, t } from "../i18n.js";
 
 function setRunButtonState($btnRun, isRunning) {
