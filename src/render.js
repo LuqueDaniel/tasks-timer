@@ -1,6 +1,6 @@
-import { nowMs, toLocalDateKey } from "./time.js?v=20260111-3";
-import { updateSummary } from "./components/summary.js?v=20260111-3";
-import { createTaskCard, updateRunningTaskCardLive } from "./components/taskCard.js?v=20260111-3";
+import { nowMs, toLocalDateKey } from "./time.js?v=20260111-5";
+import { updateSummary } from "./components/summary.js?v=20260111-5";
+import { createTaskCard, updateRunningTaskCardLive } from "./components/taskCard.js?v=20260111-5";
 
 /**
  * Full render: rebuilds the tasks list (used on mutations and day changes).

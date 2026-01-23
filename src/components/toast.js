@@ -48,7 +48,9 @@ export function removeUndoToast(host) {
  * Shows an undo toast with a custom message and countdown label.
  * The toast is not auto-removed here; the caller typically removes it via `removeUndoToast`.
  */
-export function showUndoToastMessage(host, message, onUndo, { ms = 8000, undoText = "Deshacer" } = {}) {
+import { t } from "../i18n.js";
+
+export function showUndoToastMessage(host, message, onUndo, { ms = 8000, undoText = t("common.undo") } = {}) {
   removeUndoToast(host);
   const { toast, actions } = createToastElement(message, { kind: "undo" });
 
@@ -81,5 +83,5 @@ export function showUndoToastMessage(host, message, onUndo, { ms = 8000, undoTex
  * The toast is not auto-removed here; the caller typically removes it via `removeUndoToast`.
  */
 export function showUndoToast(host, taskName, onUndo, { ms = 8000 } = {}) {
-  showUndoToastMessage(host, `Tarea “${taskName}” borrada.`, onUndo, { ms, undoText: "Deshacer" });
+  showUndoToastMessage(host, t("toast.taskDeleted", { name: taskName }), onUndo, { ms, undoText: t("common.undo") });
 }

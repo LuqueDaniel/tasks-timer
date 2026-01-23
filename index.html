@@ -1,33 +1,33 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
     <meta
       name="description"
-      content="Una forma simple de registrar el tiempo que dedicas a cada tarea durante el día."
+      content="A simple way to track how much time you spend on each task during the day."
     />
     <meta property="og:title" content="Task Timer" />
     <meta
       property="og:description"
-      content="Una forma simple de registrar el tiempo que dedicas a cada tarea durante el día."
+      content="A simple way to track how much time you spend on each task during the day."
     />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Task Timer" />
     <meta
       name="twitter:description"
-      content="Una forma simple de registrar el tiempo que dedicas a cada tarea durante el día."
+      content="A simple way to track how much time you spend on each task during the day."
     />
     <meta name="theme-color" content="#0b0c10" />
     <title>Task Timer</title>
-    <link rel="stylesheet" href="./styles.css?v=20260111-4" />
+    <link rel="stylesheet" href="./styles.css?v=20260111-5" />
   </head>
   <body>
     <noscript>
       <div class="noscript">
-        Esta aplicación requiere JavaScript para funcionar.
+        This application requires JavaScript to work.
       </div>
     </noscript>
     <header class="app-header">
@@ -35,13 +35,12 @@
         <h1>Task Timer</h1>
       </div>
       <div class="app-header__meta">
-        <div class="meta-chip" id="todayChip" aria-label="Fecha de hoy"></div>
+        <div class="meta-chip" id="todayChip" data-i18n-attr="aria-label:header.todayAria"></div>
         <button
           class="btn btn--ghost btn--icon"
           id="settingsButton"
           type="button"
-          aria-label="Configuración"
-          title="Configuración"
+          data-i18n-attr="aria-label:header.settings,title:header.settings"
         >
           <span class="icon icon--settings" aria-hidden="true"></span>
         </button>
@@ -50,10 +49,10 @@
 
     <main class="app">
       <section class="summary" aria-labelledby="summaryTitle">
-        <h2 id="summaryTitle">Resumen</h2>
+        <h2 id="summaryTitle" data-i18n="summary.title">Summary</h2>
         <div class="summary__grid">
           <div class="summary-card">
-            <div class="summary-card__label">Total hoy</div>
+            <div class="summary-card__label" data-i18n="summary.totalToday">Total today</div>
             <div class="summary-card__value" id="totalToday">00:00:00</div>
             <div class="summary-card__hint muted" id="runningHint"></div>
           </div>
@@ -61,28 +60,28 @@
       </section>
 
       <section class="add-task" aria-labelledby="addTaskTitle">
-        <h2 id="addTaskTitle">Tareas</h2>
+        <h2 id="addTaskTitle" data-i18n="tasks.title">Tasks</h2>
         <form id="addTaskForm" class="add-task__form" autocomplete="off">
-          <label class="sr-only" for="taskName">Nombre de la tarea</label>
+          <label class="sr-only" for="taskName" data-i18n="tasks.addTaskLabel">Task name</label>
           <input
             id="taskName"
             name="taskName"
             type="text"
             inputmode="text"
-            placeholder="Nueva tarea (p.ej. API - Bugfix)"
+            data-i18n-attr="placeholder:tasks.addPlaceholder"
             maxlength="80"
             required
           />
-          <button class="btn btn--primary btn--icon" type="submit" aria-label="Añadir tarea" title="Añadir tarea">
+          <button class="btn btn--primary btn--icon" type="submit" data-i18n-attr="aria-label:tasks.addAria,title:tasks.addAria">
             <span class="icon icon--plus" aria-hidden="true"></span>
           </button>
         </form>
       </section>
 
-      <section aria-label="Lista de tareas">
+      <section data-i18n-attr="aria-label:tasks.listAria">
         <div id="tasksEmpty" class="empty-state" hidden>
-          <p><strong>Sin tareas todavía.</strong></p>
-          <p class="muted">Crea una tarea y pulsa <em>Iniciar</em> para empezar a contar.</p>
+          <p><strong id="tasksEmptyTitle">No tasks yet.</strong></p>
+          <p class="muted" id="tasksEmptyBody"></p>
         </div>
         <div id="tasksList" class="tasks"></div>
       </section>
@@ -91,15 +90,14 @@
 
     <dialog class="modal" id="settingsDialog" aria-labelledby="settingsTitle">
       <div class="modal__header">
-        <h2 id="settingsTitle">Configuración</h2>
+        <h2 id="settingsTitle" data-i18n="settings.title">Settings</h2>
         <form method="dialog">
           <button
             class="btn btn--ghost btn--icon"
             id="settingsClose"
             value="cancel"
             type="submit"
-            aria-label="Cerrar"
-            title="Cerrar"
+            data-i18n-attr="aria-label:header.close,title:header.close"
           >
             <span class="icon icon--close" aria-hidden="true"></span>
           </button>
@@ -108,49 +106,51 @@
 
       <div class="modal__body">
         <section class="modal__section">
-          <h3 class="modal__sectionTitle">Apariencia</h3>
-          <p class="muted">Elige el tema de la interfaz.</p>
+          <h3 class="modal__sectionTitle" data-i18n="settings.appearanceTitle">Appearance</h3>
+          <p class="muted" data-i18n="settings.appearanceHint">Choose the interface theme.</p>
 
-          <label class="modal__label" for="settingsTheme">Tema</label>
+          <label class="modal__label" for="settingsTheme" data-i18n="settings.themeLabel">Theme</label>
           <select id="settingsTheme" name="settingsTheme">
-            <option value="system">Según el sistema</option>
-            <option value="light">Claro</option>
-            <option value="dark">Oscuro</option>
+            <option value="system" data-i18n="settings.themeSystem">System</option>
+            <option value="light" data-i18n="settings.themeLight">Light</option>
+            <option value="dark" data-i18n="settings.themeDark">Dark</option>
+          </select>
+
+          <label class="modal__label" for="settingsLanguage" data-i18n="settings.languageLabel">Language</label>
+          <select id="settingsLanguage" name="settingsLanguage">
+            <option value="en" data-i18n="settings.languageEnglish">English</option>
+            <option value="es" data-i18n="settings.languageSpanish">Spanish</option>
           </select>
         </section>
 
         <section class="modal__section">
-          <h3 class="modal__sectionTitle">Copia de seguridad</h3>
-          <p class="muted">Exporta o importa tus datos como JSON.</p>
+          <h3 class="modal__sectionTitle" data-i18n="settings.backupTitle">Backup</h3>
+          <p class="muted" data-i18n="settings.backupHint">Export or import your data as JSON.</p>
 
           <div class="modal__row">
-            <button class="btn btn--primary" type="button" id="settingsExport">Exportar JSON</button>
+            <button class="btn btn--primary" type="button" id="settingsExport" data-i18n="settings.exportJson">Export JSON</button>
             <input class="sr-only" id="settingsImportInput" type="file" accept="application/json,.json" />
-            <button class="btn" type="button" id="settingsImport">Importar JSON</button>
+            <button class="btn" type="button" id="settingsImport" data-i18n="settings.importJson">Import JSON</button>
           </div>
 
-          <p class="muted modal__note">
-            Nota: si hay un temporizador en curso, páralo antes de exportar.
-            Los temporizadores en curso no se importan.
-          </p>
+          <p class="muted modal__note" data-i18n="settings.backupNote"></p>
         </section>
 
         <section class="modal__section modal__section--danger">
-          <h3 class="modal__sectionTitle">Eliminar todo</h3>
-          <p class="muted">Borra todas las tareas y el historial guardado en este navegador.</p>
+          <h3 class="modal__sectionTitle" data-i18n="settings.dangerTitle">Delete everything</h3>
+          <p class="muted" data-i18n="settings.dangerHint">Deletes all tasks and history stored in this browser.</p>
 
-          <label class="modal__label" for="settingsDeleteConfirm">Escribe <strong>BORRAR</strong> para confirmar</label>
+          <label class="modal__label" for="settingsDeleteConfirm" id="settingsDeleteConfirmLabel"></label>
           <input
             id="settingsDeleteConfirm"
             name="settingsDeleteConfirm"
             type="text"
             inputmode="text"
             autocomplete="off"
-            placeholder="BORRAR"
           />
 
           <div class="modal__row">
-            <button class="btn btn--danger" type="button" id="settingsDelete" disabled>Eliminar todos los datos</button>
+            <button class="btn btn--danger" type="button" id="settingsDelete" data-i18n="settings.deleteAll" disabled>Delete all data</button>
           </div>
         </section>
       </div>
@@ -162,16 +162,16 @@
           <div class="task__title">
             <h3 class="task__name"></h3>
             <div class="task__sub muted">
-              <span class="task__today" title="Tiempo acumulado hoy">Hoy: 00:00:00</span>
+              <span class="task__today" data-i18n-attr="title:task.timeTodayTitle"></span>
               <span class="dot">•</span>
-              <span class="task__total" title="Tiempo acumulado total">Total: 00:00:00</span>
+              <span class="task__total" data-i18n-attr="title:task.timeTotalTitle"></span>
             </div>
           </div>
           <div class="task__actions">
-            <button class="btn btn--ghost btn--icon task__edit" type="button" aria-label="Renombrar tarea" title="Renombrar tarea">
+            <button class="btn btn--ghost btn--icon task__edit" type="button" data-i18n-attr="aria-label:task.rename,title:task.rename">
               <span class="icon icon--edit" aria-hidden="true"></span>
             </button>
-            <button class="btn btn--danger btn--icon task__delete" type="button" aria-label="Borrar tarea" title="Borrar tarea">
+            <button class="btn btn--danger btn--icon task__delete" type="button" data-i18n-attr="aria-label:task.delete,title:task.delete">
               <span class="icon icon--trash" aria-hidden="true"></span>
             </button>
           </div>
@@ -179,11 +179,11 @@
 
         <div class="task__controls">
           <div class="task__controlsRow">
-            <button class="btn btn--start btn--icon task__run" type="button" aria-label="Iniciar" title="Iniciar">
+            <button class="btn btn--start btn--icon task__run" type="button" data-i18n-attr="aria-label:task.start,title:task.start">
               <span class="icon icon--play" aria-hidden="true"></span>
             </button>
             <button class="btn btn--ghost task__toggle" type="button" aria-expanded="false">
-              Historial
+              <span data-i18n="task.history">History</span>
             </button>
           </div>
           <div class="task__running muted" hidden aria-live="polite"></div>
@@ -191,8 +191,8 @@
 
         <div class="task__history" hidden>
           <div class="history__header">
-            <div class="muted">Historial por día</div>
-            <button class="btn btn--ghost task__showAll" type="button">Ver todo</button>
+            <div class="muted" data-i18n="task.historyByDay">History by day</div>
+            <button class="btn btn--ghost task__showAll" type="button" data-i18n="task.showAll">Show all</button>
           </div>
           <div class="history__list"></div>
         </div>
@@ -201,6 +201,6 @@
 
     <div id="toastHost" class="toast-host" aria-live="polite" aria-atomic="true"></div>
 
-    <script type="module" src="./src/main.js?v=20260111-4"></script>
+    <script type="module" src="./src/main.js?v=20260111-5"></script>
   </body>
 </html>

@@ -10,6 +10,8 @@ export function getDom() {
   const taskName = document.getElementById("taskName");
   const tasksList = document.getElementById("tasksList");
   const tasksEmpty = document.getElementById("tasksEmpty");
+  const tasksEmptyTitle = document.getElementById("tasksEmptyTitle");
+  const tasksEmptyBody = document.getElementById("tasksEmptyBody");
   const taskTemplate = document.getElementById("taskTemplate");
   const toastHost = document.getElementById("toastHost");
   const settingsButton = document.getElementById("settingsButton");
@@ -19,10 +21,12 @@ export function getDom() {
   const settingsImportInput = document.getElementById("settingsImportInput");
   const settingsImport = document.getElementById("settingsImport");
   const settingsTheme = document.getElementById("settingsTheme");
+  const settingsLanguage = document.getElementById("settingsLanguage");
+  const settingsDeleteConfirmLabel = document.getElementById("settingsDeleteConfirmLabel");
   const settingsDeleteConfirm = document.getElementById("settingsDeleteConfirm");
   const settingsDelete = document.getElementById("settingsDelete");
 
-  if (!todayChip || !totalToday || !runningHint || !addTaskForm || !taskName || !tasksList || !tasksEmpty || !taskTemplate || !toastHost || !settingsButton || !settingsDialog || !settingsClose || !settingsExport || !settingsImportInput || !settingsImport || !settingsTheme || !settingsDeleteConfirm || !settingsDelete) {
+  if (!todayChip || !totalToday || !runningHint || !addTaskForm || !taskName || !tasksList || !tasksEmpty || !tasksEmptyTitle || !tasksEmptyBody || !taskTemplate || !toastHost || !settingsButton || !settingsDialog || !settingsClose || !settingsExport || !settingsImportInput || !settingsImport || !settingsTheme || !settingsLanguage || !settingsDeleteConfirmLabel || !settingsDeleteConfirm || !settingsDelete) {
     throw new Error("Incomplete DOM: check index.html IDs");
   }
 
@@ -34,6 +38,8 @@ export function getDom() {
     taskName,
     tasksList,
     tasksEmpty,
+    tasksEmptyTitle,
+    tasksEmptyBody,
     taskTemplate,
     toastHost,
     settingsButton,
@@ -43,6 +49,8 @@ export function getDom() {
     settingsImportInput,
     settingsImport,
     settingsTheme,
+    settingsLanguage,
+    settingsDeleteConfirmLabel,
     settingsDeleteConfirm,
     settingsDelete,
   };

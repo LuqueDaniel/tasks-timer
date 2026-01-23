@@ -1,9 +1,10 @@
-import { formatDateKeyForUser, formatDecimalHours, formatHMS } from "../time.js?v=20260111-3";
+import { formatDateKeyForUser, formatDecimalHours, formatHMS } from "../time.js?v=20260111-5";
 import {
   sortedHistoryEntries,
   taskTodaySeconds,
   taskTotalSecondsLive,
-} from "../model.js?v=20260111-3";
+} from "../model.js?v=20260111-5";
+import { applyTranslations, t } from "../i18n.js";
 
 function setRunButtonState($btnRun, isRunning) {
   const $runIcon = $btnRun.querySelector(".icon");
@@ -12,15 +13,15 @@ function setRunButtonState($btnRun, isRunning) {
   if (isRunning) {
     $btnRun.classList.remove("btn--start");
     $btnRun.classList.add("btn--stop");
-    $btnRun.setAttribute("aria-label", "Detener");
-    $btnRun.setAttribute("title", "Detener");
+    $btnRun.setAttribute("aria-label", t("task.stop"));
+    $btnRun.setAttribute("title", t("task.stop"));
     $runIcon.classList.remove("icon--play");
     $runIcon.classList.add("icon--stop");
   } else {
     $btnRun.classList.remove("btn--stop");
     $btnRun.classList.add("btn--start");
-    $btnRun.setAttribute("aria-label", "Iniciar");
-    $btnRun.setAttribute("title", "Iniciar");
+    $btnRun.setAttribute("aria-label", t("task.start"));
+    $btnRun.setAttribute("title", t("task.start"));
     $runIcon.classList.remove("icon--stop");
     $runIcon.classList.add("icon--play");
   }
@@ -42,7 +43,7 @@ function renderHistory({
 
   const historyId = `history_${task.id}`;
   $historyWrap.id = historyId;
-  $historyWrap.setAttribute("aria-label", `Historial de ${task.name}`);
+  $historyWrap.setAttribute("aria-label", t("task.historyAria", { task: task.name }));
   $btnToggle.setAttribute("aria-controls", historyId);
 
   $btnToggle.setAttribute("aria-expanded", expanded ? "true" : "false");
@@ -55,7 +56,7 @@ function renderHistory({
   const showAll = Boolean(state.ui.showAllHistory[task.id]);
   const visible = showAll ? all : all.slice(0, 7);
 
-  $btnShowAll.textContent = showAll ? "Ver menos" : "Ver todo";
+  $btnShowAll.textContent = showAll ? t("task.showLess") : t("task.showAll");
   $btnShowAll.hidden = all.length <= 7;
   $btnShowAll.addEventListener("click", () => handlers.toggleShowAll(task.id));
 
@@ -63,7 +64,7 @@ function renderHistory({
   if (visible.length === 0) {
     const p = document.createElement("p");
     p.className = "muted";
-    p.textContent = "Sin tiempo registrado todavía.";
+    p.textContent = t("task.noTimeYet");
     $historyList.appendChild(p);
     return;
   }
@@ -86,8 +87,8 @@ function renderHistory({
     const del = document.createElement("button");
     del.type = "button";
     del.className = "btn btn--danger btn--icon history-row__delete";
-    del.setAttribute("aria-label", "Borrar entrada del historial");
-    del.setAttribute("title", "Borrar");
+    del.setAttribute("aria-label", t("task.deleteHistoryEntryAria"));
+    del.setAttribute("title", t("task.deleteTitle"));
     del.innerHTML = '<span class="icon icon--trash" aria-hidden="true"></span>';
     del.addEventListener("click", () => handlers.deleteHistoryEntry(task.id, dateKey));
 
@@ -111,6 +112,9 @@ export function createTaskCard({
   const node = template.content.firstElementChild.cloneNode(true);
   node.dataset.taskId = task.id;
 
+  // Translate any static bits from the template (e.g. History header).
+  applyTranslations(node);
+
   const $name = node.querySelector(".task__name");
   const $today = node.querySelector(".task__today");
   const $total = node.querySelector(".task__total");
@@ -128,7 +132,7 @@ export function createTaskCard({
   $name.textContent = task.name;
 
   const requestRename = () => {
-    const next = prompt("Renombrar tarea:", task.name);
+    const next = prompt(t("dialogs.renamePrompt"), task.name);
     if (next == null) return;
     handlers.renameTask(task.id, next);
   };
@@ -138,8 +142,8 @@ export function createTaskCard({
   const todaySecs = taskTodaySeconds(state, task, todayKey, now);
   const totalSecs = taskTotalSecondsLive(state, task, now);
 
-  $today.textContent = `Hoy: ${formatHMS(todaySecs)}`;
-  $total.textContent = `Total: ${formatHMS(totalSecs)}`;
+  $today.textContent = t("task.today", { time: formatHMS(todaySecs) });
+  $total.textContent = t("task.total", { time: formatHMS(totalSecs) });
 
   const isRunning = state.running?.taskId === task.id;
   $running.hidden = !isRunning;
@@ -148,7 +152,7 @@ export function createTaskCard({
 
   if (isRunning) {
     const elapsedSecs = Math.max(0, Math.round((now - state.running.startedAt) / 1000));
-    $running.textContent = `En marcha (${formatHMS(elapsedSecs)})`;
+    $running.textContent = t("task.running", { time: formatHMS(elapsedSecs) });
   }
 
   $btnRun.addEventListener("click", () => {
@@ -157,7 +161,7 @@ export function createTaskCard({
   });
 
   $btnDelete.addEventListener("click", () => {
-    const ok = confirm(`¿Borrar la tarea "${task.name}" y su histórico?`);
+    const ok = confirm(t("dialogs.confirmDeleteTask", { name: task.name }));
     if (ok) handlers.deleteTask(task.id);
   });
 
@@ -186,17 +190,17 @@ export function updateRunningTaskCardLive(state, dom, now, todayKey) {
 
   if ($today) {
     const todaySecs = taskTodaySeconds(state, task, todayKey, now);
-    $today.textContent = `Hoy: ${formatHMS(todaySecs)}`;
+    $today.textContent = t("task.today", { time: formatHMS(todaySecs) });
   }
 
   if ($total) {
     const totalSecs = taskTotalSecondsLive(state, task, now);
-    $total.textContent = `Total: ${formatHMS(totalSecs)}`;
+    $total.textContent = t("task.total", { time: formatHMS(totalSecs) });
   }
 
   if ($running) {
     $running.hidden = false;
     const elapsedSecs = Math.max(0, Math.round((now - state.running.startedAt) / 1000));
-    $running.textContent = `En marcha (${formatHMS(elapsedSecs)})`;
+    $running.textContent = t("task.running", { time: formatHMS(elapsedSecs) });
   }
 }

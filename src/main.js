@@ -1,9 +1,9 @@
-import { createStore } from "./store.js?v=20260111-4";
-import { getDom } from "./dom.js?v=20260111-4";
-import { renderApp, renderLive } from "./render.js?v=20260111-4";
-import { showToast, showUndoToast, showUndoToastMessage, removeUndoToast } from "./components/toast.js?v=20260111-4";
-import { setupSettingsDialog } from "./components/settings.js?v=20260111-4";
-import { applyThemePreference } from "./theme.js?v=20260111-4";
+import { createStore } from "./store.js?v=20260111-5";
+import { getDom } from "./dom.js?v=20260111-5";
+import { renderApp, renderLive } from "./render.js?v=20260111-5";
+import { showToast, showUndoToast, showUndoToastMessage, removeUndoToast } from "./components/toast.js?v=20260111-5";
+import { setupSettingsDialog } from "./components/settings.js?v=20260111-5";
+import { applyThemePreference } from "./theme.js?v=20260111-5";
 import {
   addTask,
   startTask,
@@ -15,11 +15,45 @@ import {
   renameTask,
   restoreDeletedTask,
   restoreHistoryEntry,
-} from "./model.js?v=20260111-4";
-import { nowMs, toLocalDateKey, formatDateKeyForUser, formatHMS } from "./time.js?v=20260111-4";
+} from "./model.js?v=20260111-5";
+import { nowMs, toLocalDateKey, formatDateKeyForUser, formatHMS } from "./time.js?v=20260111-5";
+import { applyTranslations, detectLanguage, setLanguage as setI18nLanguage, t } from "./i18n.js";
+import { setupErrorReporting } from "./errorReporter.js";
+
+/**
+ * Initializes the language (persisted or detected) and applies a translation pass.
+ * Also sets critical attributes explicitly (e.g. placeholders) to avoid flashes
+ * where untranslated placeholders could appear empty.
+ *
+ * @param {ReturnType<import("./store.js").createStore>} store
+ * @param {ReturnType<import("./dom.js").getDom>} dom
+ * @returns {void}
+ */
+function ensureLanguageInitialized(store, dom) {
+  const state = store.getState();
+  const stored = state?.ui?.language;
+  const detected = detectLanguage();
+  const initial = stored === "en" || stored === "es" ? stored : detected;
+
+  if (state?.ui?.language !== initial) {
+    store.mutate((s) => {
+      s.ui ??= {};
+      s.ui.language = initial;
+    });
+  }
+
+  setI18nLanguage(initial);
+  applyTranslations(document);
+
+  dom.taskName.setAttribute("placeholder", t("tasks.addPlaceholder"));
+}
 
 const store = createStore();
 const dom = getDom();
+
+setupErrorReporting();
+
+ensureLanguageInitialized(store, dom);
 
 const UNDO_MS = 8000;
 let pendingUndo = null; // { snapshot, timeoutId }
@@ -31,7 +65,11 @@ function deleteHistoryEntryWithUndo(taskId, dateKey) {
   if (!task || !secs) return;
 
   const ok = confirm(
-    `¿Borrar la entrada de "${task.name}" del ${formatDateKeyForUser(dateKey)} (${formatHMS(secs)})?`,
+    t("dialogs.confirmDeleteEntry", {
+      task: task.name,
+      date: formatDateKeyForUser(dateKey),
+      time: formatHMS(secs),
+    }),
   );
   if (!ok) return;
 
@@ -56,7 +94,10 @@ function deleteHistoryEntryWithUndo(taskId, dateKey) {
 
   showUndoToastMessage(
     dom.toastHost,
-    `Entrada de “${task.name}” · ${formatDateKeyForUser(dateKey)} borrada.`,
+    t("toast.historyDeleted", {
+      task: task.name,
+      date: formatDateKeyForUser(dateKey),
+    }),
     () => {
       if (!pendingUndo) return;
       clearTimeout(pendingUndo.timeoutId);
@@ -65,7 +106,7 @@ function deleteHistoryEntryWithUndo(taskId, dateKey) {
       removeUndoToast(dom.toastHost);
       restoreHistoryEntry(store, snap);
     },
-    { ms: UNDO_MS },
+    { ms: UNDO_MS, undoText: t("common.undo") },
   );
 }
 
@@ -115,16 +156,16 @@ function deleteTaskWithUndo(taskId) {
     pendingUndo = null;
     removeUndoToast(dom.toastHost);
     restoreDeletedTask(store, snap);
-  }, { ms: UNDO_MS });
+  }, { ms: UNDO_MS, undoText: t("common.undo") });
 }
 
 const handlers = {
   addTask: (name) => {
     const res = addTask(store, name);
     if (!res?.ok) {
-      if (res?.error === "duplicate") showToast(dom.toastHost, "Ya existe una tarea con ese nombre.", { kind: "error", ms: 4500 });
-      else if (res?.error === "too_long") showToast(dom.toastHost, "El nombre es demasiado largo (máx. 80 caracteres).", { kind: "error", ms: 4500 });
-      else showToast(dom.toastHost, "Escribe un nombre de tarea válido.", { kind: "error", ms: 4500 });
+      if (res?.error === "duplicate") showToast(dom.toastHost, t("errors.duplicateTaskName"), { kind: "error", ms: 4500 });
+      else if (res?.error === "too_long") showToast(dom.toastHost, t("errors.taskNameTooLong"), { kind: "error", ms: 4500 });
+      else showToast(dom.toastHost, t("errors.invalidTaskName"), { kind: "error", ms: 4500 });
     }
     return res;
   },
@@ -137,9 +178,9 @@ const handlers = {
   renameTask: (taskId, nextName) => {
     const res = renameTask(store, taskId, nextName);
     if (!res?.ok) {
-      if (res?.error === "duplicate") showToast(dom.toastHost, "Ya existe una tarea con ese nombre.", { kind: "error", ms: 4500 });
-      else if (res?.error === "too_long") showToast(dom.toastHost, "El nombre es demasiado largo (máx. 80 caracteres).", { kind: "error", ms: 4500 });
-      else showToast(dom.toastHost, "Escribe un nombre de tarea válido.", { kind: "error", ms: 4500 });
+      if (res?.error === "duplicate") showToast(dom.toastHost, t("errors.duplicateTaskName"), { kind: "error", ms: 4500 });
+      else if (res?.error === "too_long") showToast(dom.toastHost, t("errors.taskNameTooLong"), { kind: "error", ms: 4500 });
+      else showToast(dom.toastHost, t("errors.invalidTaskName"), { kind: "error", ms: 4500 });
     }
     return res;
   },
@@ -157,8 +198,25 @@ function syncThemeFromState() {
   applyThemePreference(theme);
 }
 
+let lastLanguage = null;
+function syncLanguageFromState() {
+  const lang = store.getState()?.ui?.language ?? "en";
+  if (lang === lastLanguage) return;
+  lastLanguage = lang;
+
+  setI18nLanguage(lang);
+  applyTranslations(document);
+
+  dom.taskName.setAttribute("placeholder", t("tasks.addPlaceholder"));
+
+  // Interpolated empty-state text.
+  dom.tasksEmptyTitle.textContent = t("tasks.emptyTitle");
+  dom.tasksEmptyBody.textContent = t("tasks.emptyBody", { start: t("task.start") });
+}
+
 store.subscribe(() => {
   syncThemeFromState();
+  syncLanguageFromState();
   render();
 });
 
@@ -170,6 +228,7 @@ dom.addTaskForm.addEventListener("submit", (e) => {
 });
 
 syncThemeFromState();
+syncLanguageFromState();
 render();
 
 setupSettingsDialog({ store, dom, invalidatePendingUndo });

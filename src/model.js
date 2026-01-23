@@ -283,3 +283,14 @@ export function setTheme(store, theme) {
     state.ui.theme = next;
   });
 }
+
+export function setLanguage(store, language) {
+  const raw = String(language ?? "").trim().toLowerCase();
+  const base = raw.split("-")[0];
+  const next = base === "es" || base === "en" ? base : "en";
+
+  store.mutate((state) => {
+    state.ui ??= {};
+    state.ui.language = next;
+  });
+}

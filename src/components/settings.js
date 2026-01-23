@@ -1,9 +1,8 @@
-import { showToast } from "./toast.js?v=20260111-4";
-import { setTheme } from "../model.js?v=20260111-4";
-import { clearStoredState, defaultState, migrateState } from "../storage.js?v=20260111-4";
-import { nowMs, toLocalDateKey } from "../time.js?v=20260111-4";
-
-const REQUIRED_DELETE_CONFIRM = "BORRAR";
+import { showToast } from "./toast.js?v=20260111-5";
+import { setLanguage, setTheme } from "../model.js?v=20260111-5";
+import { clearStoredState, defaultState, migrateState } from "../storage.js?v=20260111-5";
+import { nowMs, toLocalDateKey } from "../time.js?v=20260111-5";
+import { applyTranslations, setLanguage as setI18nLanguage, t } from "../i18n.js";
 
 function downloadJson(filename, data) {
   const json = JSON.stringify(data, null, 2);
@@ -28,8 +27,23 @@ function resetDeleteConfirmation(dom) {
 function updateDeleteButtonState(dom) {
   const typed = String(dom.settingsDeleteConfirm.value ?? "")
     .trim()
-    .toLocaleUpperCase("es-ES");
-  dom.settingsDelete.disabled = typed !== REQUIRED_DELETE_CONFIRM;
+    .toLocaleUpperCase(storeLocale(dom));
+  const required = String(t("settings.deleteConfirmWord")).toLocaleUpperCase(storeLocale(dom));
+  dom.settingsDelete.disabled = typed !== required;
+}
+
+function storeLocale(dom) {
+  const lang = dom.settingsLanguage?.value === "es" ? "es-ES" : "en-US";
+  return lang;
+}
+
+function syncSettingsI18n(dom) {
+  applyTranslations(dom.settingsDialog);
+
+  dom.settingsDeleteConfirmLabel.innerHTML = `${t("settings.deleteConfirmLabel", {
+    word: `<strong>${t("settings.deleteConfirmWord")}</strong>`,
+  })}`;
+  dom.settingsDeleteConfirm.setAttribute("placeholder", t("settings.deleteConfirmPlaceholder"));
 }
 
 /**
@@ -39,6 +53,8 @@ export function setupSettingsDialog({ store, dom, invalidatePendingUndo }) {
   dom.settingsButton.addEventListener("click", () => {
     resetDeleteConfirmation(dom);
     dom.settingsTheme.value = store.getState()?.ui?.theme ?? "system";
+    dom.settingsLanguage.value = store.getState()?.ui?.language ?? "en";
+    syncSettingsI18n(dom);
     dom.settingsDialog.showModal();
   });
 
@@ -57,6 +73,12 @@ export function setupSettingsDialog({ store, dom, invalidatePendingUndo }) {
     setTheme(store, dom.settingsTheme.value);
   });
 
+  dom.settingsLanguage.addEventListener("change", () => {
+    setLanguage(store, dom.settingsLanguage.value);
+    setI18nLanguage(dom.settingsLanguage.value);
+    syncSettingsI18n(dom);
+  });
+
   dom.settingsExport.addEventListener("click", () => {
     const state = store.getState();
     const exportPayload = {
@@ -68,7 +90,7 @@ export function setupSettingsDialog({ store, dom, invalidatePendingUndo }) {
 
     const dateKey = toLocalDateKey(nowMs());
     downloadJson(`task-timer-${dateKey}.json`, exportPayload);
-    showToast(dom.toastHost, "Exportación creada.", { kind: "info", ms: 2500 });
+    showToast(dom.toastHost, t("toast.exportCreated"), { kind: "info", ms: 2500 });
   });
 
   dom.settingsImport.addEventListener("click", () => {
@@ -91,9 +113,10 @@ export function setupSettingsDialog({ store, dom, invalidatePendingUndo }) {
       invalidatePendingUndo();
       store.replaceState(nextState);
       dom.settingsDialog.close();
-      showToast(dom.toastHost, "Datos importados.", { kind: "info", ms: 3000 });
-    } catch {
-      showToast(dom.toastHost, "No se pudo importar el JSON.", { kind: "error", ms: 4500 });
+      showToast(dom.toastHost, t("toast.imported"), { kind: "info", ms: 3000 });
+    } catch (err) {
+      console.error("[Task Timer] Failed to import JSON", err);
+      showToast(dom.toastHost, t("toast.importFailed"), { kind: "error", ms: 4500 });
     }
   });
 
@@ -104,6 +127,6 @@ export function setupSettingsDialog({ store, dom, invalidatePendingUndo }) {
     clearStoredState();
     store.replaceState(defaultState(), { persist: false });
     dom.settingsDialog.close();
-    showToast(dom.toastHost, "Datos eliminados.", { kind: "info", ms: 3000 });
+    showToast(dom.toastHost, t("toast.deletedAll"), { kind: "info", ms: 3000 });
   });
 }

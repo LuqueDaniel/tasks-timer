@@ -2,6 +2,42 @@ const STORAGE_KEY = "task-timer:v1";
 const CURRENT_VERSION = 1;
 
 const THEMES = new Set(["system", "light", "dark"]);
+const LANGUAGES = new Set(["en", "es"]);
+
+/**
+ * In-memory fallback for environments where `localStorage` is blocked
+ * (e.g. some private browsing modes).
+ *
+ * @type {string|null}
+ */
+let memoryStorageValue = null;
+
+/**
+ * Returns a usable localStorage reference if available.
+ * Some environments expose `localStorage` but throw on access.
+ *
+ * @returns {Storage|null}
+ */
+function getSafeLocalStorage() {
+  try {
+    if (typeof localStorage === "undefined") return null;
+    const testKey = "__task_timer_ls_test__";
+    localStorage.setItem(testKey, "1");
+    localStorage.removeItem(testKey);
+    return localStorage;
+  } catch (err) {
+    console.warn("[Task Timer] localStorage unavailable; using in-memory fallback", err);
+    return null;
+  }
+}
+
+/**
+ * Storage backend used by this app.
+ * When unavailable, we fall back to `memoryStorageValue`.
+ *
+ * @type {Storage|null}
+ */
+const SAFE_STORAGE = getSafeLocalStorage();
 
 /**
  * Returns a fresh state object in the current schema.
@@ -17,6 +53,7 @@ export function defaultState() {
       expanded: {}, // taskId: boolean
       showAllHistory: {}, // taskId: boolean
       theme: "system", // "system" | "light" | "dark"
+      language: null, // null | "en" | "es" (null => detect on first run)
     },
   };
 }
@@ -60,6 +97,7 @@ function normalizeUi(ui) {
   const expandedRaw = isPlainObject(ui?.expanded) ? ui.expanded : {};
   const showAllHistoryRaw = isPlainObject(ui?.showAllHistory) ? ui.showAllHistory : {};
   const themeRaw = typeof ui?.theme === "string" ? ui.theme : "system";
+  const languageRaw = typeof ui?.language === "string" ? ui.language : null;
 
   // Treat these maps like sets: only keep keys that are enabled.
   const expanded = {};
@@ -73,10 +111,15 @@ function normalizeUi(ui) {
   }
 
   const theme = THEMES.has(themeRaw) ? themeRaw : "system";
+
+  const language = LANGUAGES.has(String(languageRaw).toLowerCase())
+    ? String(languageRaw).toLowerCase()
+    : null;
   return {
     expanded: { ...expanded },
     showAllHistory: { ...showAllHistory },
     theme,
+    language,
   };
 }
 
@@ -144,11 +187,12 @@ export function migrateState(state) {
  */
 export function loadState() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = SAFE_STORAGE ? SAFE_STORAGE.getItem(STORAGE_KEY) : memoryStorageValue;
     if (!raw) return defaultState();
     const parsed = JSON.parse(raw);
     return migrateState(parsed);
-  } catch {
+  } catch (err) {
+    console.warn("[Task Timer] Failed to load state; using default state", err);
     return defaultState();
   }
 }
@@ -160,11 +204,14 @@ export function loadState() {
  */
 export function saveState(state) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    const raw = JSON.stringify(state);
+    if (SAFE_STORAGE) SAFE_STORAGE.setItem(STORAGE_KEY, raw);
+    else memoryStorageValue = raw;
     return true;
   } catch (err) {
     // This may fail due to quota/private mode; avoid breaking the UI.
-    console.warn("Failed to save state to localStorage", err);
+    memoryStorageValue = null;
+    console.warn("Failed to save state", err);
     return false;
   }
 }
@@ -175,10 +222,12 @@ export function saveState(state) {
  */
 export function clearStoredState() {
   try {
-    localStorage.removeItem(STORAGE_KEY);
+    if (SAFE_STORAGE) SAFE_STORAGE.removeItem(STORAGE_KEY);
+    memoryStorageValue = null;
     return true;
   } catch (err) {
-    console.warn("Failed to clear state from localStorage", err);
+    memoryStorageValue = null;
+    console.warn("Failed to clear state", err);
     return false;
   }
 }

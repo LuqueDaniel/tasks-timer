@@ -41,7 +41,8 @@ export function formatDateKeyForUser(dateKey, options = { year: "numeric", month
   if (!d) return String(dateKey ?? "");
   try {
     return new Intl.DateTimeFormat(undefined, options).format(d);
-  } catch {
+  } catch (err) {
+    console.warn("[Task Timer] Failed to format date for user", err);
     // Very old environments: fallback to YYYY-MM-DD
     return String(dateKey ?? "");
   }
