@@ -1,6 +1,7 @@
 import { nowMs, toLocalDateKey } from "./time.js";
 import { updateSummary } from "./components/summary.js";
-import { createTaskCard, updateRunningTaskCardLive } from "./components/taskCard.js";
+import { updateRunningTaskCardLive } from "./components/taskCard.js";
+import { renderTasks, unmountTasks } from "./app/tasks/tasksRoot.jsx";
 
 /**
  * Full render: rebuilds the tasks list (used on mutations and day changes).
@@ -11,25 +12,14 @@ export function renderApp(state, dom, handlers) {
 
   updateSummary(state, dom, now, todayKey);
 
-  dom.tasksList.innerHTML = "";
-
   if (state.tasks.length === 0) {
     dom.tasksEmpty.hidden = false;
+    unmountTasks(dom);
     return;
   }
   dom.tasksEmpty.hidden = true;
 
-  for (const task of state.tasks) {
-    const node = createTaskCard({
-      state,
-      task,
-      now,
-      todayKey,
-      handlers,
-      template: dom.taskTemplate,
-    });
-    dom.tasksList.appendChild(node);
-  }
+  renderTasks({ state, dom, handlers, now, todayKey });
 }
 
 /**
