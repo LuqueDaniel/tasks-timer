@@ -117,6 +117,7 @@ export function createTaskCard({
 
   const $name = node.querySelector(".task__name");
   const $today = node.querySelector(".task__today");
+  const $todayDot = node.querySelector(".task__today + .dot");
   const $total = node.querySelector(".task__total");
 
   const $btnToggle = node.querySelector(".task__toggle");
@@ -142,7 +143,9 @@ export function createTaskCard({
   const todaySecs = taskTodaySeconds(state, task, todayKey, now);
   const totalSecs = taskTotalSecondsLive(state, task, now);
 
-  $today.textContent = t("task.today", { time: formatHMS(todaySecs) });
+  $today.hidden = todaySecs <= 0;
+  $today.textContent = $today.hidden ? "" : t("task.today", { time: formatHMS(todaySecs) });
+  if ($todayDot) $todayDot.hidden = $today.hidden;
   $total.textContent = t("task.total", { time: formatHMS(totalSecs) });
 
   const isRunning = state.running?.taskId === task.id;
@@ -185,12 +188,15 @@ export function updateRunningTaskCardLive(state, dom, now, todayKey) {
   if (!node) return;
 
   const $today = node.querySelector(".task__today");
+  const $todayDot = node.querySelector(".task__today + .dot");
   const $total = node.querySelector(".task__total");
   const $running = node.querySelector(".task__running");
 
   if ($today) {
     const todaySecs = taskTodaySeconds(state, task, todayKey, now);
-    $today.textContent = t("task.today", { time: formatHMS(todaySecs) });
+    $today.hidden = todaySecs <= 0;
+    $today.textContent = $today.hidden ? "" : t("task.today", { time: formatHMS(todaySecs) });
+    if ($todayDot) $todayDot.hidden = $today.hidden;
   }
 
   if ($total) {
