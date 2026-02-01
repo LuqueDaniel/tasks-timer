@@ -26,7 +26,30 @@ export function getDom() {
   const settingsDeleteConfirm = document.getElementById("settingsDeleteConfirm");
   const settingsDelete = document.getElementById("settingsDelete");
 
-  if (!todayChip || !totalToday || !runningHint || !addTaskForm || !taskName || !tasksList || !tasksEmpty || !tasksEmptyTitle || !tasksEmptyBody || !taskTemplate || !toastHost || !settingsButton || !settingsDialog || !settingsClose || !settingsExport || !settingsImportInput || !settingsImport || !settingsTheme || !settingsLanguage || !settingsDeleteConfirmLabel || !settingsDeleteConfirm || !settingsDelete) {
+  if (
+    !todayChip ||
+    !totalToday ||
+    !runningHint ||
+    !addTaskForm ||
+    !taskName ||
+    !tasksList ||
+    !tasksEmpty ||
+    !tasksEmptyTitle ||
+    !tasksEmptyBody ||
+    !taskTemplate ||
+    !toastHost ||
+    !settingsButton ||
+    !settingsDialog ||
+    !settingsClose ||
+    !settingsExport ||
+    !settingsImportInput ||
+    !settingsImport ||
+    !settingsTheme ||
+    !settingsLanguage ||
+    !settingsDeleteConfirmLabel ||
+    !settingsDeleteConfirm ||
+    !settingsDelete
+  ) {
     throw new Error("Incomplete DOM: check index.html IDs");
   }
 

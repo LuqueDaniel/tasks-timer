@@ -1,7 +1,12 @@
 import { createStore } from "./store.js";
 import { getDom } from "./dom.js";
 import { renderApp, renderLive } from "./render.js";
-import { showToast, showUndoToast, showUndoToastMessage, removeUndoToast } from "./components/toast.js";
+import {
+  showToast,
+  showUndoToast,
+  showUndoToastMessage,
+  removeUndoToast,
+} from "./components/toast.js";
 import { setupSettingsDialog } from "./components/settings.js";
 import { applyThemePreference } from "./theme.js";
 import {
@@ -149,22 +154,29 @@ function deleteTaskWithUndo(taskId) {
 
   pendingUndo = { snapshot, timeoutId };
 
-  showUndoToast(dom.toastHost, task.name, () => {
-    if (!pendingUndo) return;
-    clearTimeout(pendingUndo.timeoutId);
-    const snap = pendingUndo.snapshot;
-    pendingUndo = null;
-    removeUndoToast(dom.toastHost);
-    restoreDeletedTask(store, snap);
-  }, { ms: UNDO_MS, undoText: t("common.undo") });
+  showUndoToast(
+    dom.toastHost,
+    task.name,
+    () => {
+      if (!pendingUndo) return;
+      clearTimeout(pendingUndo.timeoutId);
+      const snap = pendingUndo.snapshot;
+      pendingUndo = null;
+      removeUndoToast(dom.toastHost);
+      restoreDeletedTask(store, snap);
+    },
+    { ms: UNDO_MS, undoText: t("common.undo") },
+  );
 }
 
 const handlers = {
   addTask: (name) => {
     const res = addTask(store, name);
     if (!res?.ok) {
-      if (res?.error === "duplicate") showToast(dom.toastHost, t("errors.duplicateTaskName"), { kind: "error", ms: 4500 });
-      else if (res?.error === "too_long") showToast(dom.toastHost, t("errors.taskNameTooLong"), { kind: "error", ms: 4500 });
+      if (res?.error === "duplicate")
+        showToast(dom.toastHost, t("errors.duplicateTaskName"), { kind: "error", ms: 4500 });
+      else if (res?.error === "too_long")
+        showToast(dom.toastHost, t("errors.taskNameTooLong"), { kind: "error", ms: 4500 });
       else showToast(dom.toastHost, t("errors.invalidTaskName"), { kind: "error", ms: 4500 });
     }
     return res;
@@ -178,8 +190,10 @@ const handlers = {
   renameTask: (taskId, nextName) => {
     const res = renameTask(store, taskId, nextName);
     if (!res?.ok) {
-      if (res?.error === "duplicate") showToast(dom.toastHost, t("errors.duplicateTaskName"), { kind: "error", ms: 4500 });
-      else if (res?.error === "too_long") showToast(dom.toastHost, t("errors.taskNameTooLong"), { kind: "error", ms: 4500 });
+      if (res?.error === "duplicate")
+        showToast(dom.toastHost, t("errors.duplicateTaskName"), { kind: "error", ms: 4500 });
+      else if (res?.error === "too_long")
+        showToast(dom.toastHost, t("errors.taskNameTooLong"), { kind: "error", ms: 4500 });
       else showToast(dom.toastHost, t("errors.invalidTaskName"), { kind: "error", ms: 4500 });
     }
     return res;

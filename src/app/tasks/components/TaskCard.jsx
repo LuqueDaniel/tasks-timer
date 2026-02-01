@@ -39,11 +39,7 @@ export function TaskCard({ state, task, now, todayKey, handlers }) {
         <div className="task__title">
           <h3 className="task__name">{task.name}</h3>
           <div className="task__sub muted">
-            <span
-              className="task__today"
-              hidden={todaySecs <= 0}
-              title={t("task.timeTodayTitle")}
-            >
+            <span className="task__today" hidden={todaySecs <= 0} title={t("task.timeTodayTitle")}>
               {todaySecs <= 0 ? "" : t("task.today", { time: formatHMS(todaySecs) })}
             </span>
             <span className="dot" hidden={todaySecs <= 0}>
@@ -81,9 +77,7 @@ export function TaskCard({ state, task, now, todayKey, handlers }) {
         <div className="task__controlsRow">
           <button
             className={
-              isRunning
-                ? "btn btn--stop btn--icon task__run"
-                : "btn btn--start btn--icon task__run"
+              isRunning ? "btn btn--stop btn--icon task__run" : "btn btn--start btn--icon task__run"
             }
             type="button"
             aria-label={isRunning ? t("task.stop") : t("task.start")}
@@ -110,9 +104,7 @@ export function TaskCard({ state, task, now, todayKey, handlers }) {
         <div className="task__running muted" hidden={!isRunning} aria-live="polite">
           {isRunning
             ? t("task.running", {
-                time: formatHMS(
-                  Math.max(0, Math.round((now - state.running.startedAt) / 1000)),
-                ),
+                time: formatHMS(Math.max(0, Math.round((now - state.running.startedAt) / 1000))),
               })
             : ""}
         </div>

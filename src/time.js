@@ -36,7 +36,10 @@ export function dateFromLocalDateKey(dateKey) {
  * Formats a YYYY-MM-DD date key using the user's browser locale.
  * Storage keys remain YYYY-MM-DD; this is display-only.
  */
-export function formatDateKeyForUser(dateKey, options = { year: "numeric", month: "2-digit", day: "2-digit" }) {
+export function formatDateKeyForUser(
+  dateKey,
+  options = { year: "numeric", month: "2-digit", day: "2-digit" },
+) {
   const d = dateFromLocalDateKey(dateKey);
   if (!d) return String(dateKey ?? "");
   try {

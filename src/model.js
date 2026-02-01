@@ -292,7 +292,9 @@ export function setTheme(store, theme) {
 }
 
 export function setLanguage(store, language) {
-  const raw = String(language ?? "").trim().toLowerCase();
+  const raw = String(language ?? "")
+    .trim()
+    .toLowerCase();
   const base = raw.split("-")[0];
   const next = base === "es" || base === "en" ? base : "en";
 

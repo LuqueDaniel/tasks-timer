@@ -1,9 +1,5 @@
 import { formatDateKeyForUser, formatDecimalHours, formatHMS } from "../time.js";
-import {
-  sortedHistoryEntries,
-  taskTodaySeconds,
-  taskTotalSecondsLive,
-} from "../model.js";
+import { sortedHistoryEntries, taskTodaySeconds, taskTotalSecondsLive } from "../model.js";
 import { applyTranslations, t } from "../i18n.js";
 
 function setRunButtonState($btnRun, isRunning) {
@@ -27,13 +23,7 @@ function setRunButtonState($btnRun, isRunning) {
   }
 }
 
-function renderHistory({
-  state,
-  task,
-  expanded,
-  node,
-  handlers,
-}) {
+function renderHistory({ state, task, expanded, node, handlers }) {
   const $historyWrap = node.querySelector(".task__history");
   const $historyList = node.querySelector(".history__list");
   const $btnShowAll = node.querySelector(".task__showAll");
@@ -101,14 +91,7 @@ function renderHistory({
   }
 }
 
-export function createTaskCard({
-  state,
-  task,
-  now,
-  todayKey,
-  handlers,
-  template,
-}) {
+export function createTaskCard({ state, task, now, todayKey, handlers, template }) {
   const node = template.content.firstElementChild.cloneNode(true);
   node.dataset.taskId = task.id;
 

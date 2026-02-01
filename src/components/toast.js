@@ -50,7 +50,12 @@ export function removeUndoToast(host) {
  */
 import { t } from "../i18n.js";
 
-export function showUndoToastMessage(host, message, onUndo, { ms = 8000, undoText = t("common.undo") } = {}) {
+export function showUndoToastMessage(
+  host,
+  message,
+  onUndo,
+  { ms = 8000, undoText = t("common.undo") } = {},
+) {
   removeUndoToast(host);
   const { toast, actions } = createToastElement(message, { kind: "undo" });
 
@@ -83,5 +88,8 @@ export function showUndoToastMessage(host, message, onUndo, { ms = 8000, undoTex
  * The toast is not auto-removed here; the caller typically removes it via `removeUndoToast`.
  */
 export function showUndoToast(host, taskName, onUndo, { ms = 8000 } = {}) {
-  showUndoToastMessage(host, t("toast.taskDeleted", { name: taskName }), onUndo, { ms, undoText: t("common.undo") });
+  showUndoToastMessage(host, t("toast.taskDeleted", { name: taskName }), onUndo, {
+    ms,
+    undoText: t("common.undo"),
+  });
 }

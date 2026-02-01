@@ -26,9 +26,7 @@
   </head>
   <body>
     <noscript>
-      <div class="noscript">
-        This application requires JavaScript to work.
-      </div>
+      <div class="noscript">This application requires JavaScript to work.</div>
     </noscript>
     <header class="app-header">
       <div class="app-header__title">
@@ -72,7 +70,11 @@
             maxlength="80"
             required
           />
-          <button class="btn btn--primary btn--icon" type="submit" data-i18n-attr="aria-label:tasks.addAria,title:tasks.addAria">
+          <button
+            class="btn btn--primary btn--icon"
+            type="submit"
+            data-i18n-attr="aria-label:tasks.addAria,title:tasks.addAria"
+          >
             <span class="icon icon--plus" aria-hidden="true"></span>
           </button>
         </form>
@@ -85,7 +87,6 @@
         </div>
         <div id="tasksList" class="tasks"></div>
       </section>
-
     </main>
 
     <dialog class="modal" id="settingsDialog" aria-labelledby="settingsTitle">
@@ -109,14 +110,18 @@
           <h3 class="modal__sectionTitle" data-i18n="settings.appearanceTitle">Appearance</h3>
           <p class="muted" data-i18n="settings.appearanceHint">Choose the interface theme.</p>
 
-          <label class="modal__label" for="settingsTheme" data-i18n="settings.themeLabel">Theme</label>
+          <label class="modal__label" for="settingsTheme" data-i18n="settings.themeLabel"
+            >Theme</label
+          >
           <select id="settingsTheme" name="settingsTheme">
             <option value="system" data-i18n="settings.themeSystem">System</option>
             <option value="light" data-i18n="settings.themeLight">Light</option>
             <option value="dark" data-i18n="settings.themeDark">Dark</option>
           </select>
 
-          <label class="modal__label" for="settingsLanguage" data-i18n="settings.languageLabel">Language</label>
+          <label class="modal__label" for="settingsLanguage" data-i18n="settings.languageLabel"
+            >Language</label
+          >
           <select id="settingsLanguage" name="settingsLanguage">
             <option value="en" data-i18n="settings.languageEnglish">English</option>
             <option value="es" data-i18n="settings.languageSpanish">Spanish</option>
@@ -128,9 +133,23 @@
           <p class="muted" data-i18n="settings.backupHint">Export or import your data as JSON.</p>
 
           <div class="modal__row">
-            <button class="btn btn--primary" type="button" id="settingsExport" data-i18n="settings.exportJson">Export JSON</button>
-            <input class="sr-only" id="settingsImportInput" type="file" accept="application/json,.json" />
-            <button class="btn" type="button" id="settingsImport" data-i18n="settings.importJson">Import JSON</button>
+            <button
+              class="btn btn--primary"
+              type="button"
+              id="settingsExport"
+              data-i18n="settings.exportJson"
+            >
+              Export JSON
+            </button>
+            <input
+              class="sr-only"
+              id="settingsImportInput"
+              type="file"
+              accept="application/json,.json"
+            />
+            <button class="btn" type="button" id="settingsImport" data-i18n="settings.importJson">
+              Import JSON
+            </button>
           </div>
 
           <p class="muted modal__note" data-i18n="settings.backupNote"></p>
@@ -138,9 +157,15 @@
 
         <section class="modal__section modal__section--danger">
           <h3 class="modal__sectionTitle" data-i18n="settings.dangerTitle">Delete everything</h3>
-          <p class="muted" data-i18n="settings.dangerHint">Deletes all tasks and history stored in this browser.</p>
+          <p class="muted" data-i18n="settings.dangerHint">
+            Deletes all tasks and history stored in this browser.
+          </p>
 
-          <label class="modal__label" for="settingsDeleteConfirm" id="settingsDeleteConfirmLabel"></label>
+          <label
+            class="modal__label"
+            for="settingsDeleteConfirm"
+            id="settingsDeleteConfirmLabel"
+          ></label>
           <input
             id="settingsDeleteConfirm"
             name="settingsDeleteConfirm"
@@ -150,7 +175,15 @@
           />
 
           <div class="modal__row">
-            <button class="btn btn--danger" type="button" id="settingsDelete" data-i18n="settings.deleteAll" disabled>Delete all data</button>
+            <button
+              class="btn btn--danger"
+              type="button"
+              id="settingsDelete"
+              data-i18n="settings.deleteAll"
+              disabled
+            >
+              Delete all data
+            </button>
           </div>
         </section>
       </div>
@@ -168,10 +201,18 @@
             </div>
           </div>
           <div class="task__actions">
-            <button class="btn btn--ghost btn--icon task__edit" type="button" data-i18n-attr="aria-label:task.rename,title:task.rename">
+            <button
+              class="btn btn--ghost btn--icon task__edit"
+              type="button"
+              data-i18n-attr="aria-label:task.rename,title:task.rename"
+            >
               <span class="icon icon--edit" aria-hidden="true"></span>
             </button>
-            <button class="btn btn--danger btn--icon task__delete" type="button" data-i18n-attr="aria-label:task.delete,title:task.delete">
+            <button
+              class="btn btn--danger btn--icon task__delete"
+              type="button"
+              data-i18n-attr="aria-label:task.delete,title:task.delete"
+            >
               <span class="icon icon--trash" aria-hidden="true"></span>
             </button>
           </div>
@@ -179,7 +220,11 @@
 
         <div class="task__controls">
           <div class="task__controlsRow">
-            <button class="btn btn--start btn--icon task__run" type="button" data-i18n-attr="aria-label:task.start,title:task.start">
+            <button
+              class="btn btn--start btn--icon task__run"
+              type="button"
+              data-i18n-attr="aria-label:task.start,title:task.start"
+            >
               <span class="icon icon--play" aria-hidden="true"></span>
             </button>
             <button class="btn btn--ghost task__toggle" type="button" aria-expanded="false">
@@ -192,7 +237,9 @@
         <div class="task__history" hidden>
           <div class="history__header">
             <div class="muted" data-i18n="task.historyByDay">History by day</div>
-            <button class="btn btn--ghost task__showAll" type="button" data-i18n="task.showAll">Show all</button>
+            <button class="btn btn--ghost task__showAll" type="button" data-i18n="task.showAll">
+              Show all
+            </button>
           </div>
           <div class="history__list"></div>
         </div>

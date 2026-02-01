@@ -20,10 +20,14 @@ const MESSAGES = /** @type {const} */ ({
  * @returns {Language|null}
  */
 function normalizeLanguage(raw) {
-  const s = String(raw ?? "").trim().toLowerCase();
+  const s = String(raw ?? "")
+    .trim()
+    .toLowerCase();
   if (!s) return null;
   const base = s.split("-")[0];
-  return SUPPORTED_LANGUAGES.includes(/** @type {any} */ (base)) ? /** @type {Language} */ (base) : null;
+  return SUPPORTED_LANGUAGES.includes(/** @type {any} */ (base))
+    ? /** @type {Language} */ (base)
+    : null;
 }
 
 /**
