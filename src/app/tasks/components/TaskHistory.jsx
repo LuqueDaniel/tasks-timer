@@ -3,7 +3,7 @@ import { useCallback, useMemo } from "preact/hooks";
 import { useSortedHistoryEntries } from "../hooks/useSortedHistoryEntries.js";
 import { TaskHistoryRow } from "./TaskHistoryRow.jsx";
 
-export function TaskHistory({ state, task, expanded, showAll, handlers }) {
+export function TaskHistory({ task, expanded, showAll, handlers }) {
   const allEntries = useSortedHistoryEntries(task);
   const visibleEntries = useMemo(
     () => (showAll ? allEntries : allEntries.slice(0, 7)),
