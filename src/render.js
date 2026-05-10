@@ -1,5 +1,5 @@
 import { nowMs, toLocalDateKey } from "./time.js";
-import { updateSummary } from "./components/summary.js";
+import { renderSummary } from "./app/summary/summaryRoot.jsx";
 import { updateRunningTaskCardLive } from "./components/taskCard.js";
 import { renderTasks, unmountTasks } from "./app/tasks/tasksRoot.jsx";
 
@@ -10,7 +10,7 @@ export function renderApp(state, dom, handlers) {
   const now = nowMs();
   const todayKey = toLocalDateKey(now);
 
-  updateSummary(state, dom, now, todayKey);
+  renderSummary({ state, dom, now, todayKey });
 
   if (state.tasks.length === 0) {
     dom.tasksEmpty.hidden = false;
@@ -28,6 +28,6 @@ export function renderApp(state, dom, handlers) {
 export function renderLive(state, dom) {
   const now = nowMs();
   const todayKey = toLocalDateKey(now);
-  updateSummary(state, dom, now, todayKey);
+  renderSummary({ state, dom, now, todayKey });
   updateRunningTaskCardLive(state, dom, now, todayKey);
 }
