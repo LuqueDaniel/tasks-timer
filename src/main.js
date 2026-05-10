@@ -217,10 +217,6 @@ function syncLanguageFromState() {
 
   setI18nLanguage(lang);
   applyTranslations(document);
-
-  // Interpolated empty-state text.
-  dom.tasksEmptyTitle.textContent = t("tasks.emptyTitle");
-  dom.tasksEmptyBody.textContent = t("tasks.emptyBody", { start: t("task.start") });
 }
 
 store.subscribe(() => {

@@ -7,10 +7,7 @@ export function getDom() {
   const totalToday = document.getElementById("totalToday");
   const runningHint = document.getElementById("runningHint");
   const addTaskRoot = document.getElementById("addTaskRoot");
-  const tasksList = document.getElementById("tasksList");
-  const tasksEmpty = document.getElementById("tasksEmpty");
-  const tasksEmptyTitle = document.getElementById("tasksEmptyTitle");
-  const tasksEmptyBody = document.getElementById("tasksEmptyBody");
+  const tasksRoot = document.getElementById("tasksRoot");
   const taskTemplate = document.getElementById("taskTemplate");
   const toastHost = document.getElementById("toastHost");
   const settingsButton = document.getElementById("settingsButton");
@@ -30,10 +27,7 @@ export function getDom() {
     !totalToday ||
     !runningHint ||
     !addTaskRoot ||
-    !tasksList ||
-    !tasksEmpty ||
-    !tasksEmptyTitle ||
-    !tasksEmptyBody ||
+    !tasksRoot ||
     !taskTemplate ||
     !toastHost ||
     !settingsButton ||
@@ -56,10 +50,7 @@ export function getDom() {
     totalToday,
     runningHint,
     addTaskRoot,
-    tasksList,
-    tasksEmpty,
-    tasksEmptyTitle,
-    tasksEmptyBody,
+    tasksRoot,
     taskTemplate,
     toastHost,
     settingsButton,
