@@ -58,26 +58,7 @@
       </section>
 
       <section class="add-task" aria-labelledby="addTaskTitle">
-        <h2 id="addTaskTitle" data-i18n="tasks.title">Tasks</h2>
-        <form id="addTaskForm" class="add-task__form" autocomplete="off">
-          <label class="sr-only" for="taskName" data-i18n="tasks.addTaskLabel">Task name</label>
-          <input
-            id="taskName"
-            name="taskName"
-            type="text"
-            inputmode="text"
-            data-i18n-attr="placeholder:tasks.addPlaceholder"
-            maxlength="80"
-            required
-          />
-          <button
-            class="btn btn--primary btn--icon"
-            type="submit"
-            data-i18n-attr="aria-label:tasks.addAria,title:tasks.addAria"
-          >
-            <span class="icon icon--plus" aria-hidden="true"></span>
-          </button>
-        </form>
+        <div id="addTaskRoot"></div>
       </section>
 
       <section data-i18n-attr="aria-label:tasks.listAria">

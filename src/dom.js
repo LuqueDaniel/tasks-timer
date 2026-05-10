@@ -6,8 +6,7 @@ export function getDom() {
   const todayChip = document.getElementById("todayChip");
   const totalToday = document.getElementById("totalToday");
   const runningHint = document.getElementById("runningHint");
-  const addTaskForm = document.getElementById("addTaskForm");
-  const taskName = document.getElementById("taskName");
+  const addTaskRoot = document.getElementById("addTaskRoot");
   const tasksList = document.getElementById("tasksList");
   const tasksEmpty = document.getElementById("tasksEmpty");
   const tasksEmptyTitle = document.getElementById("tasksEmptyTitle");
@@ -30,8 +29,7 @@ export function getDom() {
     !todayChip ||
     !totalToday ||
     !runningHint ||
-    !addTaskForm ||
-    !taskName ||
+    !addTaskRoot ||
     !tasksList ||
     !tasksEmpty ||
     !tasksEmptyTitle ||
@@ -57,8 +55,7 @@ export function getDom() {
     todayChip,
     totalToday,
     runningHint,
-    addTaskForm,
-    taskName,
+    addTaskRoot,
     tasksList,
     tasksEmpty,
     tasksEmptyTitle,

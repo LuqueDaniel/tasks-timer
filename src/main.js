@@ -27,8 +27,7 @@ import { setupErrorReporting } from "./errorReporter.js";
 
 /**
  * Initializes the language (persisted or detected) and applies a translation pass.
- * Also sets critical attributes explicitly (e.g. placeholders) to avoid flashes
- * where untranslated placeholders could appear empty.
+ * Dynamic Preact-rendered sections consume i18n keys directly at render time.
  *
  * @param {ReturnType<import("./store.js").createStore>} store
  * @param {ReturnType<import("./dom.js").getDom>} dom
@@ -49,8 +48,6 @@ function ensureLanguageInitialized(store, dom) {
 
   setI18nLanguage(initial);
   applyTranslations(document);
-
-  dom.taskName.setAttribute("placeholder", t("tasks.addPlaceholder"));
 }
 
 const store = createStore();
@@ -221,8 +218,6 @@ function syncLanguageFromState() {
   setI18nLanguage(lang);
   applyTranslations(document);
 
-  dom.taskName.setAttribute("placeholder", t("tasks.addPlaceholder"));
-
   // Interpolated empty-state text.
   dom.tasksEmptyTitle.textContent = t("tasks.emptyTitle");
   dom.tasksEmptyBody.textContent = t("tasks.emptyBody", { start: t("task.start") });
@@ -232,13 +227,6 @@ store.subscribe(() => {
   syncThemeFromState();
   syncLanguageFromState();
   render();
-});
-
-dom.addTaskForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  handlers.addTask(dom.taskName.value);
-  dom.taskName.value = "";
-  dom.taskName.focus();
 });
 
 syncThemeFromState();
