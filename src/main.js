@@ -25,25 +25,55 @@ import { nowMs, toLocalDateKey, formatDateKeyForUser, formatHMS } from "./time.j
 import { applyTranslations, detectLanguage, setLanguage as setI18nLanguage, t } from "./i18n.js";
 import { setupErrorReporting } from "./errorReporter.js";
 
+/** @typedef {ReturnType<typeof createStore>} Store */
+/** @typedef {import("./types/appTypes.js").DomRefs} DomRefs */
+/** @typedef {import("./types/appTypes.js").AppTaskState} AppTaskState */
+/** @typedef {import("./types/appTypes.js").RenderHandlers} RenderHandlers */
+
+/**
+ * @typedef HistoryUndoSnapshot
+ * @property {"history"} kind
+ * @property {string} taskId
+ * @property {string} taskName
+ * @property {string} dateKey
+ * @property {number} seconds
+ */
+
+/**
+ * @typedef TaskUndoSnapshot
+ * @property {{ id: string, name: string, createdAt: number, entries: Record<string, number> }} task
+ * @property {number} index
+ * @property {{ expanded: boolean | undefined, showAllHistory: boolean | undefined }} ui
+ * @property {{ taskId: string, startedAt: number } | null} running
+ */
+
+/**
+ * @typedef PendingUndo
+ * @property {HistoryUndoSnapshot | TaskUndoSnapshot} snapshot
+ * @property {number} timeoutId
+ */
+
 /**
  * Initializes the language (persisted or detected) and applies a translation pass.
  * Dynamic Preact-rendered sections consume i18n keys directly at render time.
  *
- * @param {ReturnType<import("./store.js").createStore>} store
- * @param {ReturnType<import("./dom.js").getDom>} dom
+ * @param {Store} store
+ * @param {DomRefs} dom
  * @returns {void}
  */
 function ensureLanguageInitialized(store, dom) {
-  const state = store.getState();
+  const state = /** @type {AppTaskState} */ (store.getState());
   const stored = state?.ui?.language;
   const detected = detectLanguage();
   const initial = stored === "en" || stored === "es" ? stored : detected;
 
   if (state?.ui?.language !== initial) {
-    store.mutate((s) => {
-      s.ui ??= {};
+    store.mutate(
+      /** @param {AppTaskState} s */
+      (s) => {
       s.ui.language = initial;
-    });
+      },
+    );
   }
 
   setI18nLanguage(initial);
@@ -58,10 +88,12 @@ setupErrorReporting();
 ensureLanguageInitialized(store, dom);
 
 const UNDO_MS = 8000;
-let pendingUndo = null; // { snapshot, timeoutId }
+/** @type {PendingUndo | null} */
+let pendingUndo = null;
 
+/** @param {string} taskId @param {string} dateKey */
 function deleteHistoryEntryWithUndo(taskId, dateKey) {
-  const state = store.getState();
+  const state = /** @type {AppTaskState} */ (store.getState());
   const task = state.tasks.find((t) => t.id === taskId);
   const secs = task?.entries?.[dateKey];
   if (!task || !secs) return;
@@ -77,6 +109,7 @@ function deleteHistoryEntryWithUndo(taskId, dateKey) {
 
   invalidatePendingUndo();
 
+  /** @type {HistoryUndoSnapshot} */
   const snapshot = {
     kind: "history",
     taskId,
@@ -87,7 +120,7 @@ function deleteHistoryEntryWithUndo(taskId, dateKey) {
 
   deleteHistoryEntry(store, taskId, dateKey);
 
-  const timeoutId = setTimeout(() => {
+  const timeoutId = window.setTimeout(() => {
     pendingUndo = null;
     removeUndoToast(dom.toastHost);
   }, UNDO_MS);
@@ -120,8 +153,9 @@ function invalidatePendingUndo() {
   }
 }
 
+/** @param {string} taskId */
 function deleteTaskWithUndo(taskId) {
-  const state = store.getState();
+  const state = /** @type {AppTaskState} */ (store.getState());
   const index = state.tasks.findIndex((t) => t.id === taskId);
   const task = state.tasks[index];
   if (!task) return;
@@ -129,6 +163,7 @@ function deleteTaskWithUndo(taskId) {
   // Invalidate previous undo (only the last deletion can be undone)
   invalidatePendingUndo();
 
+  /** @type {TaskUndoSnapshot} */
   const snapshot = {
     task:
       typeof structuredClone === "function"
@@ -144,7 +179,7 @@ function deleteTaskWithUndo(taskId) {
 
   deleteTask(store, taskId);
 
-  const timeoutId = setTimeout(() => {
+  const timeoutId = window.setTimeout(() => {
     pendingUndo = null;
     removeUndoToast(dom.toastHost);
   }, UNDO_MS);
@@ -162,11 +197,13 @@ function deleteTaskWithUndo(taskId) {
       removeUndoToast(dom.toastHost);
       restoreDeletedTask(store, snap);
     },
-    { ms: UNDO_MS, undoText: t("common.undo") },
+    { ms: UNDO_MS },
   );
 }
 
+/** @type {RenderHandlers} */
 const handlers = {
+  /** @param {string} name */
   addTask: (name) => {
     const res = addTask(store, name);
     if (!res?.ok) {
@@ -178,12 +215,18 @@ const handlers = {
     }
     return res;
   },
+  /** @param {string} taskId */
   startTask: (taskId) => startTask(store, taskId),
   stopRunning: () => stopRunning(store),
+  /** @param {string} taskId */
   deleteTask: (taskId) => deleteTaskWithUndo(taskId),
+  /** @param {string} taskId @param {string} dateKey */
   deleteHistoryEntry: (taskId, dateKey) => deleteHistoryEntryWithUndo(taskId, dateKey),
+  /** @param {string} taskId */
   toggleHistory: (taskId) => toggleHistory(store, taskId),
+  /** @param {string} taskId */
   toggleShowAll: (taskId) => toggleShowAll(store, taskId),
+  /** @param {string} taskId @param {string} nextName */
   renameTask: (taskId, nextName) => {
     const res = renameTask(store, taskId, nextName);
     if (!res?.ok) {
@@ -201,6 +244,7 @@ function render() {
   renderApp(store.getState(), dom, handlers);
 }
 
+/** @type {"system" | "light" | "dark" | null} */
 let lastTheme = null;
 function syncThemeFromState() {
   const theme = store.getState()?.ui?.theme ?? "system";
@@ -209,9 +253,10 @@ function syncThemeFromState() {
   applyThemePreference(theme);
 }
 
+/** @type {"en" | "es" | null} */
 let lastLanguage = null;
 function syncLanguageFromState() {
-  const lang = store.getState()?.ui?.language ?? "en";
+  const lang = store.getState()?.ui?.language === "es" ? "es" : "en";
   if (lang === lastLanguage) return;
   lastLanguage = lang;
 

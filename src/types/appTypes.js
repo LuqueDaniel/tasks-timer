@@ -17,6 +17,8 @@
  * @typedef TaskUiState
  * @property {Record<string, boolean>} expanded
  * @property {Record<string, boolean>} showAllHistory
+ * @property {"system" | "light" | "dark"} [theme]
+ * @property {string | null} [language]
  */
 
 /**

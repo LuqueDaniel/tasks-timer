@@ -12,15 +12,7 @@ export function getDom() {
   const toastHost = document.getElementById("toastHost");
   const settingsButton = document.getElementById("settingsButton");
   const settingsDialog = document.getElementById("settingsDialog");
-  const settingsClose = document.getElementById("settingsClose");
-  const settingsExport = document.getElementById("settingsExport");
-  const settingsImportInput = document.getElementById("settingsImportInput");
-  const settingsImport = document.getElementById("settingsImport");
-  const settingsTheme = document.getElementById("settingsTheme");
-  const settingsLanguage = document.getElementById("settingsLanguage");
-  const settingsDeleteConfirmLabel = document.getElementById("settingsDeleteConfirmLabel");
-  const settingsDeleteConfirm = document.getElementById("settingsDeleteConfirm");
-  const settingsDelete = document.getElementById("settingsDelete");
+  const settingsRoot = document.getElementById("settingsRoot");
 
   if (
     !todayChip ||
@@ -32,15 +24,7 @@ export function getDom() {
     !toastHost ||
     !settingsButton ||
     !settingsDialog ||
-    !settingsClose ||
-    !settingsExport ||
-    !settingsImportInput ||
-    !settingsImport ||
-    !settingsTheme ||
-    !settingsLanguage ||
-    !settingsDeleteConfirmLabel ||
-    !settingsDeleteConfirm ||
-    !settingsDelete
+    !settingsRoot
   ) {
     throw new Error("Incomplete DOM: check index.html IDs");
   }
@@ -55,14 +39,6 @@ export function getDom() {
     toastHost,
     settingsButton,
     settingsDialog,
-    settingsClose,
-    settingsExport,
-    settingsImportInput,
-    settingsImport,
-    settingsTheme,
-    settingsLanguage,
-    settingsDeleteConfirmLabel,
-    settingsDeleteConfirm,
-    settingsDelete,
+    settingsRoot,
   };
 }
