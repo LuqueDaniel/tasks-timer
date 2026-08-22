@@ -39,9 +39,9 @@ export function SettingsDialogContent({
     return typed === required;
   }, [deleteConfirm, locale, requiredWord]);
 
-  const confirmLabelHtml = t("settings.deleteConfirmLabel", {
-    word: `<strong>${requiredWord}</strong>`,
-  });
+  const confirmLabelParts = t("settings.deleteConfirmLabel", { word: "__WORD__" }).split(
+    "__WORD__",
+  );
 
   return (
     <div className="modal__body">
@@ -117,11 +117,11 @@ export function SettingsDialogContent({
         <h3 className="modal__sectionTitle">{t("settings.dangerTitle")}</h3>
         <p className="muted">{t("settings.dangerHint")}</p>
 
-        <label
-          className="modal__label"
-          htmlFor="settingsDeleteConfirm"
-          dangerouslySetInnerHTML={{ __html: confirmLabelHtml }}
-        />
+        <label className="modal__label" htmlFor="settingsDeleteConfirm">
+          {confirmLabelParts[0]}
+          <strong>{requiredWord}</strong>
+          {confirmLabelParts[1]}
+        </label>
         <input
           id="settingsDeleteConfirm"
           name="settingsDeleteConfirm"

@@ -2,15 +2,24 @@ import { formatHMS } from "../../../time.js";
 import { taskTodaySeconds, taskTotalSecondsLive } from "../../../model.js";
 import { t } from "../../../i18n.js";
 import { useCallback } from "preact/hooks";
+import { memo } from "preact/compat";
 import { TaskHistory } from "./TaskHistory.jsx";
 
-export function TaskCard({ state, task, now, todayKey, handlers }) {
+function TaskCardBase({
+  state,
+  task,
+  taskName,
+  expanded,
+  showAll,
+  isRunning,
+  runningStartedAt,
+  now,
+  todayKey,
+  handlers,
+}) {
   const todaySecs = taskTodaySeconds(state, task, todayKey, now);
   const totalSecs = taskTotalSecondsLive(state, task, now);
-  const isRunning = state.running?.taskId === task.id;
 
-  const expanded = Boolean(state.ui.expanded?.[task.id]);
-  const showAll = Boolean(state.ui.showAllHistory?.[task.id]);
   const historyId = `history_${task.id}`;
 
   const requestRename = useCallback(() => {
@@ -37,7 +46,7 @@ export function TaskCard({ state, task, now, todayKey, handlers }) {
     <article className="task" data-task-id={task.id}>
       <div className="task__top">
         <div className="task__title">
-          <h3 className="task__name">{task.name}</h3>
+          <h3 className="task__name">{taskName}</h3>
           <div className="task__sub muted">
             <span className="task__today" hidden={todaySecs <= 0} title={t("task.timeTodayTitle")}>
               {todaySecs <= 0 ? "" : t("task.today", { time: formatHMS(todaySecs) })}
@@ -104,7 +113,7 @@ export function TaskCard({ state, task, now, todayKey, handlers }) {
         <div className="task__running muted" hidden={!isRunning} aria-live="polite">
           {isRunning
             ? t("task.running", {
-                time: formatHMS(Math.max(0, Math.round((now - state.running.startedAt) / 1000))),
+                time: formatHMS(Math.max(0, Math.round((now - runningStartedAt) / 1000))),
               })
             : ""}
         </div>
@@ -120,3 +129,20 @@ export function TaskCard({ state, task, now, todayKey, handlers }) {
     </article>
   );
 }
+
+function areTaskCardPropsEqual(previous, next) {
+  return (
+    previous.taskName === next.taskName &&
+    previous.entries === next.entries &&
+    previous.expanded === next.expanded &&
+    previous.showAll === next.showAll &&
+    previous.isRunning === next.isRunning &&
+    previous.runningStartedAt === next.runningStartedAt &&
+    previous.language === next.language &&
+    previous.todayKey === next.todayKey &&
+    previous.handlers === next.handlers &&
+    (!next.isRunning || previous.now === next.now)
+  );
+}
+
+export const TaskCard = memo(TaskCardBase, areTaskCardPropsEqual);

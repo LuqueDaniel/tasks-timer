@@ -1,7 +1,6 @@
 import { nowMs, toLocalDateKey } from "./time.js";
 import { renderAddTask } from "./app/addTask/addTaskRoot.jsx";
 import { renderSummary } from "./app/summary/summaryRoot.jsx";
-import { updateRunningTaskCardLive } from "./components/taskCard.js";
 import { renderTasks } from "./app/tasks/tasksRoot.jsx";
 
 /** @typedef {import("./types/appTypes.js").DomRefs} DomRefs */
@@ -35,5 +34,4 @@ export function renderLive(state, dom) {
   const now = nowMs();
   const todayKey = toLocalDateKey(now);
   renderSummary({ state, dom, now, todayKey });
-  updateRunningTaskCardLive(state, dom, now, todayKey);
 }

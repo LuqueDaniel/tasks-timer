@@ -58,10 +58,9 @@ import { setupErrorReporting } from "./errorReporter.js";
  * Dynamic Preact-rendered sections consume i18n keys directly at render time.
  *
  * @param {Store} store
- * @param {DomRefs} dom
  * @returns {void}
  */
-function ensureLanguageInitialized(store, dom) {
+function ensureLanguageInitialized(store) {
   const state = /** @type {AppTaskState} */ (store.getState());
   const stored = state?.ui?.language;
   const detected = detectLanguage();
@@ -71,7 +70,7 @@ function ensureLanguageInitialized(store, dom) {
     store.mutate(
       /** @param {AppTaskState} s */
       (s) => {
-      s.ui.language = initial;
+        s.ui.language = initial;
       },
     );
   }
@@ -85,7 +84,7 @@ const dom = getDom();
 
 setupErrorReporting();
 
-ensureLanguageInitialized(store, dom);
+ensureLanguageInitialized(store);
 
 const UNDO_MS = 8000;
 /** @type {PendingUndo | null} */

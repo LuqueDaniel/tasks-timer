@@ -85,63 +85,6 @@
       <div id="settingsRoot"></div>
     </dialog>
 
-    <template id="taskTemplate">
-      <article class="task" data-task-id="">
-        <div class="task__top">
-          <div class="task__title">
-            <h3 class="task__name"></h3>
-            <div class="task__sub muted">
-              <span class="task__today" data-i18n-attr="title:task.timeTodayTitle"></span>
-              <span class="dot">•</span>
-              <span class="task__total" data-i18n-attr="title:task.timeTotalTitle"></span>
-            </div>
-          </div>
-          <div class="task__actions">
-            <button
-              class="btn btn--ghost btn--icon task__edit"
-              type="button"
-              data-i18n-attr="aria-label:task.rename,title:task.rename"
-            >
-              <span class="icon icon--edit" aria-hidden="true"></span>
-            </button>
-            <button
-              class="btn btn--danger btn--icon task__delete"
-              type="button"
-              data-i18n-attr="aria-label:task.delete,title:task.delete"
-            >
-              <span class="icon icon--trash" aria-hidden="true"></span>
-            </button>
-          </div>
-        </div>
-
-        <div class="task__controls">
-          <div class="task__controlsRow">
-            <button
-              class="btn btn--start btn--icon task__run"
-              type="button"
-              data-i18n-attr="aria-label:task.start,title:task.start"
-            >
-              <span class="icon icon--play" aria-hidden="true"></span>
-            </button>
-            <button class="btn btn--ghost task__toggle" type="button" aria-expanded="false">
-              <span data-i18n="task.history">History</span>
-            </button>
-          </div>
-          <div class="task__running muted" hidden aria-live="polite"></div>
-        </div>
-
-        <div class="task__history" hidden>
-          <div class="history__header">
-            <div class="muted" data-i18n="task.historyByDay">History by day</div>
-            <button class="btn btn--ghost task__showAll" type="button" data-i18n="task.showAll">
-              Show all
-            </button>
-          </div>
-          <div class="history__list"></div>
-        </div>
-      </article>
-    </template>
-
     <div id="toastHost" class="toast-host" aria-live="polite" aria-atomic="true"></div>
 
     <script type="module" src="./src/main.js"></script>

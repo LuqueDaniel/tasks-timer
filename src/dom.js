@@ -8,7 +8,6 @@ export function getDom() {
   const runningHint = document.getElementById("runningHint");
   const addTaskRoot = document.getElementById("addTaskRoot");
   const tasksRoot = document.getElementById("tasksRoot");
-  const taskTemplate = document.getElementById("taskTemplate");
   const toastHost = document.getElementById("toastHost");
   const settingsButton = document.getElementById("settingsButton");
   const settingsDialog = document.getElementById("settingsDialog");
@@ -20,7 +19,6 @@ export function getDom() {
     !runningHint ||
     !addTaskRoot ||
     !tasksRoot ||
-    !taskTemplate ||
     !toastHost ||
     !settingsButton ||
     !settingsDialog ||
@@ -35,7 +33,6 @@ export function getDom() {
     runningHint,
     addTaskRoot,
     tasksRoot,
-    taskTemplate,
     toastHost,
     settingsButton,
     settingsDialog,
