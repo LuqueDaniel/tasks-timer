@@ -6,6 +6,7 @@ import {
   showUndoToast,
   showUndoToastMessage,
   removeUndoToast,
+  mountToastHost,
 } from "./components/toast.js";
 import { setupSettingsDialog } from "./components/settings.js";
 import { applyThemePreference } from "./theme.js";
@@ -81,6 +82,8 @@ function ensureLanguageInitialized(store) {
 
 const store = createStore();
 const dom = getDom();
+
+mountToastHost(dom.toastHost);
 
 setupErrorReporting();
 
