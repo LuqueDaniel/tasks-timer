@@ -1,4 +1,3 @@
-import { render } from "preact";
 import { useRef } from "preact/hooks";
 import { AddTaskFields } from "./components/AddTaskFields.jsx";
 
@@ -22,6 +21,4 @@ function AddTaskRoot({ handlers }) {
 }
 
 /** @param {AddTaskRenderArgs} params */
-export function renderAddTask({ dom, handlers }) {
-  render(<AddTaskRoot handlers={handlers} />, dom.addTaskRoot);
-}
+export { AddTaskRoot };

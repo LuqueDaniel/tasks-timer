@@ -1,10 +1,8 @@
-import { h, render } from "preact";
-import { ToastHost } from "./ToastHost.jsx";
 import { t } from "../i18n.js";
 
 const controllers = new WeakMap();
 
-function createController() {
+export function createToastController() {
   let nextId = 0;
   let notifications = [];
   const listeners = new Set();
@@ -79,16 +77,15 @@ function createController() {
 function getController(host) {
   let controller = controllers.get(host);
   if (!controller) {
-    controller = createController();
+    controller = createToastController();
     controllers.set(host, controller);
-    render(h(ToastHost, { controller }), host);
   }
   return controller;
 }
 
 /** Mounts the state-driven Preact notification host. */
-export function mountToastHost(host) {
-  getController(host);
+export function mountToastHost(host, controller = createToastController()) {
+  controllers.set(host, controller);
 }
 
 /** Shows a toast message inside the provided host element. */

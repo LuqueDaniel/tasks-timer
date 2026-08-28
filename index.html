@@ -28,64 +28,7 @@
     <noscript>
       <div class="noscript">This application requires JavaScript to work.</div>
     </noscript>
-    <header class="app-header">
-      <div class="app-header__title">
-        <h1>Task Timer</h1>
-      </div>
-      <div class="app-header__meta">
-        <div class="meta-chip" id="todayChip" data-i18n-attr="aria-label:header.todayAria"></div>
-        <button
-          class="btn btn--ghost btn--icon"
-          id="settingsButton"
-          type="button"
-          data-i18n-attr="aria-label:header.settings,title:header.settings"
-        >
-          <span class="icon icon--settings" aria-hidden="true"></span>
-        </button>
-      </div>
-    </header>
-
-    <main class="app">
-      <section class="summary" aria-labelledby="summaryTitle">
-        <h2 id="summaryTitle" data-i18n="summary.title">Summary</h2>
-        <div class="summary__grid">
-          <div class="summary-card">
-            <div class="summary-card__label" data-i18n="summary.totalToday">Total today</div>
-            <div class="summary-card__value" id="totalToday">00:00:00</div>
-            <div class="summary-card__hint muted" id="runningHint"></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="add-task" aria-labelledby="addTaskTitle">
-        <div id="addTaskRoot"></div>
-      </section>
-
-      <section>
-        <div id="tasksRoot"></div>
-      </section>
-    </main>
-
-    <dialog class="modal" id="settingsDialog" aria-labelledby="settingsTitle">
-      <div class="modal__header">
-        <h2 id="settingsTitle" data-i18n="settings.title">Settings</h2>
-        <form method="dialog">
-          <button
-            class="btn btn--ghost btn--icon"
-            id="settingsClose"
-            value="cancel"
-            type="submit"
-            data-i18n-attr="aria-label:header.close,title:header.close"
-          >
-            <span class="icon icon--close" aria-hidden="true"></span>
-          </button>
-        </form>
-      </div>
-
-      <div id="settingsRoot"></div>
-    </dialog>
-
-    <div id="toastHost" class="toast-host" aria-live="polite" aria-atomic="true"></div>
+    <div id="appRoot"></div>
 
     <script type="module" src="./src/main.js"></script>
   </body>

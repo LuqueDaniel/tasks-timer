@@ -1,4 +1,3 @@
-import { render } from "preact";
 import { TodayChip } from "./components/TodayChip.jsx";
 import { TotalTodayValue } from "./components/TotalTodayValue.jsx";
 import { RunningHint } from "./components/RunningHint.jsx";
@@ -14,8 +13,10 @@ import { RunningHint } from "./components/RunningHint.jsx";
  */
 
 /** @param {SummaryRenderArgs} params */
-export function renderSummary({ state, dom, now, todayKey }) {
-  render(<TodayChip todayKey={todayKey} />, dom.todayChip);
-  render(<TotalTodayValue state={state} todayKey={todayKey} now={now} />, dom.totalToday);
-  render(<RunningHint state={state} />, dom.runningHint);
+export function renderSummary({ state, now, todayKey }) {
+  return {
+    today: <TodayChip todayKey={todayKey} />,
+    total: <TotalTodayValue state={state} todayKey={todayKey} now={now} />,
+    hint: <RunningHint state={state} />,
+  };
 }

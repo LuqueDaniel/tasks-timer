@@ -1,4 +1,3 @@
-import { render } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import { TasksSection } from "./views/TasksSection.jsx";
 import { nowMs } from "../../time.js";
@@ -17,12 +16,7 @@ import { nowMs } from "../../time.js";
  */
 
 /** @param {RenderTasksArgs} params */
-export function renderTasks({ state, dom, handlers, now, todayKey }) {
-  render(
-    <TasksRoot state={state} handlers={handlers} now={now} todayKey={todayKey} />,
-    dom.tasksRoot,
-  );
-}
+export { TasksRoot };
 
 /**
  * Keeps the live timer inside Preact. The parent still controls full renders,
@@ -43,6 +37,3 @@ function TasksRoot({ state, handlers, now, todayKey }) {
 }
 
 /** @param {DomRefs} dom */
-export function unmountTasks(dom) {
-  render(null, dom.tasksRoot);
-}

@@ -1,14 +1,15 @@
 import { createStore } from "./store.js";
 import { getDom } from "./dom.js";
-import { renderApp, renderLive } from "./render.js";
+import { h, render } from "preact";
+import { App } from "./app/App.jsx";
 import {
   showToast,
   showUndoToast,
   showUndoToastMessage,
   removeUndoToast,
   mountToastHost,
+  createToastController,
 } from "./components/toast.js";
-import { setupSettingsDialog } from "./components/settings.js";
 import { applyThemePreference } from "./theme.js";
 import {
   addTask,
@@ -21,7 +22,10 @@ import {
   renameTask,
   restoreDeletedTask,
   restoreHistoryEntry,
+  setLanguage,
+  setTheme,
 } from "./model.js";
+import { clearStoredState, defaultState, migrateState } from "./storage.js";
 import { nowMs, toLocalDateKey, formatDateKeyForUser, formatHMS } from "./time.js";
 import { applyTranslations, detectLanguage, setLanguage as setI18nLanguage, t } from "./i18n.js";
 import { setupErrorReporting } from "./errorReporter.js";
@@ -81,9 +85,8 @@ function ensureLanguageInitialized(store) {
 }
 
 const store = createStore();
-const dom = getDom();
-
-mountToastHost(dom.toastHost);
+let dom;
+const toastController = createToastController();
 
 setupErrorReporting();
 
@@ -242,63 +245,73 @@ const handlers = {
   },
 };
 
-function render() {
-  renderApp(store.getState(), dom, handlers);
-}
+const settings = {
+  onThemeChange: (nextTheme) => setTheme(store, nextTheme),
+  onLanguageChange: (nextLanguage) => {
+    setLanguage(store, nextLanguage);
+    setI18nLanguage(nextLanguage);
+  },
+  onExport: () => {
+    const current = store.getState();
+    const blob = new Blob(
+      [
+        JSON.stringify(
+          {
+            app: "task-timer",
+            exportedAt: new Date().toISOString(),
+            state: { ...current, running: null },
+          },
+          null,
+          2,
+        ),
+      ],
+      { type: "application/json" },
+    );
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `task-timer-${toLocalDateKey(nowMs())}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+    showToast(dom.toastHost, t("toast.exportCreated"), { kind: "info", ms: 2500 });
+  },
+  onImportFile: async (file) => {
+    try {
+      const parsed = JSON.parse(await file.text());
+      const rawState = parsed?.app === "task-timer" && parsed?.state ? parsed.state : parsed;
+      const nextState = migrateState(rawState);
+      nextState.running = null;
+      invalidatePendingUndo();
+      store.replaceState(nextState);
+      dom.settingsDialog.close();
+      showToast(dom.toastHost, t("toast.imported"), { kind: "info", ms: 3000 });
+    } catch (err) {
+      console.error("[Task Timer] Failed to import JSON", err);
+      showToast(dom.toastHost, t("toast.importFailed"), { kind: "error", ms: 4500 });
+    }
+  },
+  onDeleteAll: () => {
+    invalidatePendingUndo();
+    clearStoredState();
+    store.replaceState(defaultState(), { persist: false });
+    dom.settingsDialog.close();
+    showToast(dom.toastHost, t("toast.deletedAll"), { kind: "info", ms: 3000 });
+  },
+};
 
-/** @type {"system" | "light" | "dark" | null} */
-let lastTheme = null;
-function syncThemeFromState() {
-  const theme = store.getState()?.ui?.theme ?? "system";
-  if (theme === lastTheme) return;
-  lastTheme = theme;
-  applyThemePreference(theme);
-}
-
-/** @type {"en" | "es" | null} */
-let lastLanguage = null;
-function syncLanguageFromState() {
-  const lang = store.getState()?.ui?.language === "es" ? "es" : "en";
-  if (lang === lastLanguage) return;
-  lastLanguage = lang;
-
-  setI18nLanguage(lang);
-  applyTranslations(document);
-}
+render(h(App, { store, handlers, settings, toastController }), document.getElementById("appRoot"));
+dom = getDom();
+mountToastHost(dom.toastHost, toastController);
 
 store.subscribe(() => {
-  syncThemeFromState();
-  syncLanguageFromState();
-  render();
+  applyThemePreference(store.getState()?.ui?.theme ?? "system");
+  const language = store.getState()?.ui?.language === "es" ? "es" : "en";
+  setI18nLanguage(language);
+  applyTranslations(document);
 });
-
-syncThemeFromState();
-syncLanguageFromState();
-render();
-
-setupSettingsDialog({ store, dom, invalidatePendingUndo });
-
-let lastDateKey = toLocalDateKey(nowMs());
-setInterval(() => {
-  const state = store.getState();
-  const dateKey = toLocalDateKey(nowMs());
-
-  // If the day changes, do a full render to refresh every card.
-  if (dateKey !== lastDateKey) {
-    lastDateKey = dateKey;
-    renderApp(state, dom, handlers);
-    return;
-  }
-
-  // If a timer is running, update only summary + active task.
-  if (state.running) {
-    renderLive(state, dom);
-  }
-}, 1000);
-
-document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) render();
-});
+applyThemePreference(store.getState()?.ui?.theme ?? "system");
 
 window.addEventListener("beforeunload", () => {
   store.persist();
