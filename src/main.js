@@ -10,7 +10,6 @@ import {
   mountToastHost,
   createToastController,
 } from "./components/toast.js";
-import { applyThemePreference } from "./theme.js";
 import {
   addTask,
   startTask,
@@ -27,7 +26,7 @@ import {
 } from "./model.js";
 import { clearStoredState, defaultState, migrateState } from "./storage.js";
 import { nowMs, toLocalDateKey, formatDateKeyForUser, formatHMS } from "./time.js";
-import { applyTranslations, detectLanguage, setLanguage as setI18nLanguage, t } from "./i18n.js";
+import { detectLanguage, setLanguage as setI18nLanguage, t } from "./i18n.js";
 import { setupErrorReporting } from "./errorReporter.js";
 
 /** @typedef {ReturnType<typeof createStore>} Store */
@@ -81,7 +80,6 @@ function ensureLanguageInitialized(store) {
   }
 
   setI18nLanguage(initial);
-  applyTranslations(document);
 }
 
 const store = createStore();
@@ -249,7 +247,6 @@ const settings = {
   onThemeChange: (nextTheme) => setTheme(store, nextTheme),
   onLanguageChange: (nextLanguage) => {
     setLanguage(store, nextLanguage);
-    setI18nLanguage(nextLanguage);
   },
   onExport: () => {
     const current = store.getState();
@@ -304,15 +301,3 @@ const settings = {
 render(h(App, { store, handlers, settings, toastController }), document.getElementById("appRoot"));
 dom = getDom();
 mountToastHost(dom.toastHost, toastController);
-
-store.subscribe(() => {
-  applyThemePreference(store.getState()?.ui?.theme ?? "system");
-  const language = store.getState()?.ui?.language === "es" ? "es" : "en";
-  setI18nLanguage(language);
-  applyTranslations(document);
-});
-applyThemePreference(store.getState()?.ui?.theme ?? "system");
-
-window.addEventListener("beforeunload", () => {
-  store.persist();
-});

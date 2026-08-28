@@ -1,6 +1,4 @@
-import { useEffect, useState } from "preact/hooks";
 import { TasksSection } from "./views/TasksSection.jsx";
-import { nowMs } from "../../time.js";
 
 /** @typedef {import("../../types/appTypes.js").DomRefs} DomRefs */
 /** @typedef {import("../../types/appTypes.js").TaskHandlers} TasksHandlers */
@@ -19,21 +17,10 @@ import { nowMs } from "../../time.js";
 export { TasksRoot };
 
 /**
- * Keeps the live timer inside Preact. The parent still controls full renders,
- * while this root refreshes its clock only while a task is running.
+ * Renders the task section using the clock managed by the application root.
  */
 function TasksRoot({ state, handlers, now, todayKey }) {
-  const [clockNow, setClockNow] = useState(now);
-
-  useEffect(() => {
-    setClockNow(now);
-    if (!state.running) return undefined;
-
-    const intervalId = window.setInterval(() => setClockNow(nowMs()), 1000);
-    return () => window.clearInterval(intervalId);
-  }, [now, state.running, todayKey]);
-
-  return <TasksSection state={state} handlers={handlers} now={clockNow} todayKey={todayKey} />;
+  return <TasksSection state={state} handlers={handlers} now={now} todayKey={todayKey} />;
 }
 
 /** @param {DomRefs} dom */
