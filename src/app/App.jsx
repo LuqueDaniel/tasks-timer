@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import { AddTaskRoot } from "./addTask/addTaskRoot.jsx";
 import { SettingsRoot } from "./settings/settingsRoot.jsx";
-import { renderSummary } from "./summary/summaryRoot.jsx";
+import { SummaryRoot } from "./summary/summaryRoot.jsx";
 import { TasksRoot } from "./tasks/tasksRoot.jsx";
 import { ToastHost } from "../components/ToastHost.jsx";
 import { applyTranslations, setLanguage as setI18nLanguage, t } from "../i18n.js";
@@ -75,8 +75,6 @@ export function App({ store, handlers, settings, toastController }) {
     };
   }, [settingsOpen]);
 
-  const summary = renderSummary({ state, now: clockNow, todayKey });
-
   return (
     <>
       <header className="app-header">
@@ -84,12 +82,11 @@ export function App({ store, handlers, settings, toastController }) {
           <h1>Task Timer</h1>
         </div>
         <div className="app-header__meta">
-          <div className="meta-chip" id="todayChip" aria-label={t("header.todayAria")}>
+          <div className="meta-chip" aria-label={t("header.todayAria")}>
             {t("summary.todayChip", { date: formatDateKeyForUser(todayKey) })}
           </div>
           <button
             className="btn btn--ghost btn--icon"
-            id="settingsButton"
             type="button"
             aria-label={t("header.settings")}
             title={t("header.settings")}
@@ -101,39 +98,21 @@ export function App({ store, handlers, settings, toastController }) {
       </header>
 
       <main className="app">
-        <section className="summary" aria-labelledby="summaryTitle">
-          <h2 id="summaryTitle">{t("summary.title")}</h2>
-          <div className="summary__grid">
-            <div className="summary-card">
-              <div className="summary-card__label">{t("summary.totalToday")}</div>
-              <div className="summary-card__value" id="totalToday">
-                {summary.total}
-              </div>
-              <div className="summary-card__hint muted" id="runningHint">
-                {summary.hint}
-              </div>
-            </div>
-          </div>
-        </section>
+        <SummaryRoot state={state} now={clockNow} todayKey={todayKey} />
         <section className="add-task" aria-labelledby="addTaskTitle">
-          <div id="addTaskRoot">
-            <AddTaskRoot handlers={handlers} />
-          </div>
+          <AddTaskRoot handlers={handlers} />
         </section>
         <section>
-          <div id="tasksRoot">
-            <TasksRoot state={state} handlers={handlers} now={clockNow} todayKey={todayKey} />
-          </div>
+          <TasksRoot state={state} handlers={handlers} now={clockNow} todayKey={todayKey} />
         </section>
       </main>
 
-      <dialog className="modal" id="settingsDialog" ref={dialogRef} aria-labelledby="settingsTitle">
+      <dialog className="modal" ref={dialogRef} aria-labelledby="settingsTitle">
         <div className="modal__header">
           <h2 id="settingsTitle">{t("settings.title")}</h2>
           <form method="dialog">
             <button
               className="btn btn--ghost btn--icon"
-              id="settingsClose"
               value="cancel"
               type="submit"
               aria-label={t("header.close")}
@@ -143,12 +122,23 @@ export function App({ store, handlers, settings, toastController }) {
             </button>
           </form>
         </div>
-        <div id="settingsRoot">
-          <SettingsRoot state={state} resetToken={resetToken} settings={settings} />
-        </div>
+        <SettingsRoot
+          state={state}
+          resetToken={resetToken}
+          settings={{
+            ...settings,
+            onImportFile: async (file) => {
+              if (await settings.onImportFile(file)) setSettingsOpen(false);
+            },
+            onDeleteAll: () => {
+              settings.onDeleteAll();
+              setSettingsOpen(false);
+            },
+          }}
+        />
       </dialog>
 
-      <div id="toastHost" className="toast-host" aria-live="polite" aria-atomic="true">
+      <div className="toast-host" aria-live="polite" aria-atomic="true">
         <ToastHost controller={toastController} />
       </div>
     </>

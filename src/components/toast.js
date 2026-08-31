@@ -1,7 +1,5 @@
 import { t } from "../i18n.js";
 
-const controllers = new WeakMap();
-
 export function createToastController() {
   let nextId = 0;
   let notifications = [];
@@ -74,38 +72,23 @@ export function createToastController() {
   };
 }
 
-function getController(host) {
-  let controller = controllers.get(host);
-  if (!controller) {
-    controller = createToastController();
-    controllers.set(host, controller);
-  }
-  return controller;
-}
-
-/** Mounts the state-driven Preact notification host. */
-export function mountToastHost(host, controller = createToastController()) {
-  controllers.set(host, controller);
-}
-
-/** Shows a toast message inside the provided host element. */
-export function showToast(host, message, { kind = "info", ms = 3500 } = {}) {
-  getController(host).add({ kind, message }, ms);
+/** Shows a toast message through the state-driven notification controller. */
+export function showToast(controller, message, { kind = "info", ms = 3500 } = {}) {
+  controller.add({ kind, message }, ms);
 }
 
 /** Removes the current undo toast (if any) and clears its timers. */
-export function removeUndoToast(host) {
-  getController(host).removeUndo();
+export function removeUndoToast(controller) {
+  controller.removeUndo();
 }
 
 /** Shows an undo toast with a custom message and countdown label. */
 export function showUndoToastMessage(
-  host,
+  controller,
   message,
   onUndo,
   { ms = 8000, undoText = t("common.undo") } = {},
 ) {
-  const controller = getController(host);
   controller.removeUndo();
   controller.add(
     { kind: "undo", message, onUndo, undoText, remainingSeconds: Math.ceil(ms / 1000) },
@@ -114,8 +97,8 @@ export function showUndoToastMessage(
 }
 
 /** Shows an undo toast for a deleted task. */
-export function showUndoToast(host, taskName, onUndo, { ms = 8000 } = {}) {
-  showUndoToastMessage(host, t("toast.taskDeleted", { name: taskName }), onUndo, {
+export function showUndoToast(controller, taskName, onUndo, { ms = 8000 } = {}) {
+  showUndoToastMessage(controller, t("toast.taskDeleted", { name: taskName }), onUndo, {
     ms,
     undoText: t("common.undo"),
   });

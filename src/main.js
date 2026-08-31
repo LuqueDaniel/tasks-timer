@@ -1,5 +1,4 @@
 import { createStore } from "./store.js";
-import { getDom } from "./dom.js";
 import { h, render } from "preact";
 import { App } from "./app/App.jsx";
 import {
@@ -7,7 +6,6 @@ import {
   showUndoToast,
   showUndoToastMessage,
   removeUndoToast,
-  mountToastHost,
   createToastController,
 } from "./components/toast.js";
 import {
@@ -30,9 +28,8 @@ import { detectLanguage, setLanguage as setI18nLanguage, t } from "./i18n.js";
 import { setupErrorReporting } from "./errorReporter.js";
 
 /** @typedef {ReturnType<typeof createStore>} Store */
-/** @typedef {import("./types/appTypes.js").DomRefs} DomRefs */
 /** @typedef {import("./types/appTypes.js").AppTaskState} AppTaskState */
-/** @typedef {import("./types/appTypes.js").RenderHandlers} RenderHandlers */
+/** @typedef {import("./types/appTypes.js").AppHandlers} AppHandlers */
 
 /**
  * @typedef HistoryUndoSnapshot
@@ -83,7 +80,6 @@ function ensureLanguageInitialized(store) {
 }
 
 const store = createStore();
-let dom;
 const toastController = createToastController();
 
 setupErrorReporting();
@@ -125,13 +121,13 @@ function deleteHistoryEntryWithUndo(taskId, dateKey) {
 
   const timeoutId = window.setTimeout(() => {
     pendingUndo = null;
-    removeUndoToast(dom.toastHost);
+    removeUndoToast(toastController);
   }, UNDO_MS);
 
   pendingUndo = { snapshot, timeoutId };
 
   showUndoToastMessage(
-    dom.toastHost,
+    toastController,
     t("toast.historyDeleted", {
       task: task.name,
       date: formatDateKeyForUser(dateKey),
@@ -141,7 +137,7 @@ function deleteHistoryEntryWithUndo(taskId, dateKey) {
       clearTimeout(pendingUndo.timeoutId);
       const snap = pendingUndo.snapshot;
       pendingUndo = null;
-      removeUndoToast(dom.toastHost);
+      removeUndoToast(toastController);
       restoreHistoryEntry(store, snap);
     },
     { ms: UNDO_MS, undoText: t("common.undo") },
@@ -152,7 +148,7 @@ function invalidatePendingUndo() {
   if (pendingUndo?.timeoutId) {
     clearTimeout(pendingUndo.timeoutId);
     pendingUndo = null;
-    removeUndoToast(dom.toastHost);
+    removeUndoToast(toastController);
   }
 }
 
@@ -184,37 +180,37 @@ function deleteTaskWithUndo(taskId) {
 
   const timeoutId = window.setTimeout(() => {
     pendingUndo = null;
-    removeUndoToast(dom.toastHost);
+    removeUndoToast(toastController);
   }, UNDO_MS);
 
   pendingUndo = { snapshot, timeoutId };
 
   showUndoToast(
-    dom.toastHost,
+    toastController,
     task.name,
     () => {
       if (!pendingUndo) return;
       clearTimeout(pendingUndo.timeoutId);
       const snap = pendingUndo.snapshot;
       pendingUndo = null;
-      removeUndoToast(dom.toastHost);
+      removeUndoToast(toastController);
       restoreDeletedTask(store, snap);
     },
     { ms: UNDO_MS },
   );
 }
 
-/** @type {RenderHandlers} */
+/** @type {AppHandlers} */
 const handlers = {
   /** @param {string} name */
   addTask: (name) => {
     const res = addTask(store, name);
     if (!res?.ok) {
       if (res?.error === "duplicate")
-        showToast(dom.toastHost, t("errors.duplicateTaskName"), { kind: "error", ms: 4500 });
+        showToast(toastController, t("errors.duplicateTaskName"), { kind: "error", ms: 4500 });
       else if (res?.error === "too_long")
-        showToast(dom.toastHost, t("errors.taskNameTooLong"), { kind: "error", ms: 4500 });
-      else showToast(dom.toastHost, t("errors.invalidTaskName"), { kind: "error", ms: 4500 });
+        showToast(toastController, t("errors.taskNameTooLong"), { kind: "error", ms: 4500 });
+      else showToast(toastController, t("errors.invalidTaskName"), { kind: "error", ms: 4500 });
     }
     return res;
   },
@@ -234,10 +230,10 @@ const handlers = {
     const res = renameTask(store, taskId, nextName);
     if (!res?.ok) {
       if (res?.error === "duplicate")
-        showToast(dom.toastHost, t("errors.duplicateTaskName"), { kind: "error", ms: 4500 });
+        showToast(toastController, t("errors.duplicateTaskName"), { kind: "error", ms: 4500 });
       else if (res?.error === "too_long")
-        showToast(dom.toastHost, t("errors.taskNameTooLong"), { kind: "error", ms: 4500 });
-      else showToast(dom.toastHost, t("errors.invalidTaskName"), { kind: "error", ms: 4500 });
+        showToast(toastController, t("errors.taskNameTooLong"), { kind: "error", ms: 4500 });
+      else showToast(toastController, t("errors.invalidTaskName"), { kind: "error", ms: 4500 });
     }
     return res;
   },
@@ -272,7 +268,7 @@ const settings = {
     link.click();
     link.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 1500);
-    showToast(dom.toastHost, t("toast.exportCreated"), { kind: "info", ms: 2500 });
+    showToast(toastController, t("toast.exportCreated"), { kind: "info", ms: 2500 });
   },
   onImportFile: async (file) => {
     try {
@@ -282,22 +278,20 @@ const settings = {
       nextState.running = null;
       invalidatePendingUndo();
       store.replaceState(nextState);
-      dom.settingsDialog.close();
-      showToast(dom.toastHost, t("toast.imported"), { kind: "info", ms: 3000 });
+      showToast(toastController, t("toast.imported"), { kind: "info", ms: 3000 });
+      return true;
     } catch (err) {
       console.error("[Task Timer] Failed to import JSON", err);
-      showToast(dom.toastHost, t("toast.importFailed"), { kind: "error", ms: 4500 });
+      showToast(toastController, t("toast.importFailed"), { kind: "error", ms: 4500 });
+      return false;
     }
   },
   onDeleteAll: () => {
     invalidatePendingUndo();
     clearStoredState();
     store.replaceState(defaultState(), { persist: false });
-    dom.settingsDialog.close();
-    showToast(dom.toastHost, t("toast.deletedAll"), { kind: "info", ms: 3000 });
+    showToast(toastController, t("toast.deletedAll"), { kind: "info", ms: 3000 });
   },
 };
 
 render(h(App, { store, handlers, settings, toastController }), document.getElementById("appRoot"));
-dom = getDom();
-mountToastHost(dom.toastHost, toastController);

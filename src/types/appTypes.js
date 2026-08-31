@@ -2,8 +2,6 @@
  * Shared JSDoc types for JavaScript modules (no TypeScript .d.ts needed).
  */
 
-/** @typedef {ReturnType<import("../dom.js").getDom>} DomRefs */
-
 /** @typedef {{ taskId: string, startedAt: number } | null} RunningTimer */
 
 /**
@@ -40,7 +38,7 @@
  */
 
 /**
- * @typedef RenderHandlers
+ * @typedef AppHandlers
  * @property {(name: string) => unknown} addTask
  * @property {(taskId: string) => unknown} startTask
  * @property {() => unknown} stopRunning
