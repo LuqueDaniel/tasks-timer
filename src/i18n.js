@@ -61,15 +61,6 @@ export function detectLanguage() {
 }
 
 /**
- * Returns the currently active language.
- *
- * @returns {Language}
- */
-export function getLanguage() {
-  return currentLanguage;
-}
-
-/**
  * Sets the current language (unsupported values fall back to English).
  * Also updates `<html lang>` and localized meta descriptions.
  *
@@ -138,65 +129,4 @@ export function t(key, vars) {
   const fromEn = currentLanguage === "en" ? null : readMessage("en", key);
   const template = fromCurrent ?? fromEn ?? String(key);
   return interpolate(template, vars);
-}
-
-/**
- * Applies i18n markers to a single element.
- *
- * @param {Element} el
- * @returns {void}
- */
-function applyToElement(el) {
-  const key = el.getAttribute("data-i18n");
-  if (key) el.textContent = t(key);
-
-  const attrs = el.getAttribute("data-i18n-attr");
-  if (attrs) {
-    for (const part of attrs.split(",")) {
-      const trimmed = part.trim();
-      if (!trimmed) continue;
-      const idx = trimmed.indexOf(":");
-      if (idx < 0) continue;
-      const attrName = trimmed.slice(0, idx).trim();
-      const attrKey = trimmed.slice(idx + 1).trim();
-      if (!attrName || !attrKey) continue;
-      el.setAttribute(attrName, t(attrKey));
-    }
-  }
-}
-
-/**
- * Applies translations for all nodes under `root`.
- * Supports:
- * - `data-i18n="some.key"` => textContent
- * - `data-i18n-attr="aria-label:some.key,title:other.key"` => attributes
- *
- * @param {Document|Element} [root=document]
- * @returns {void}
- */
-export function applyTranslations(root = document) {
-  // Apply root itself if it has markers.
-  if (root instanceof Element) applyToElement(root);
-
-  const elements = root.querySelectorAll?.("[data-i18n], [data-i18n-attr]") ?? [];
-  for (const el of elements) applyToElement(el);
-}
-
-/**
- * Returns true if `lang` is a supported language tag.
- *
- * @param {unknown} lang
- * @returns {boolean}
- */
-export function isSupportedLanguage(lang) {
-  return Boolean(normalizeLanguage(lang));
-}
-
-/**
- * Returns all supported languages.
- *
- * @returns {Language[]}
- */
-export function supportedLanguages() {
-  return [...SUPPORTED_LANGUAGES];
 }

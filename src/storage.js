@@ -68,11 +68,20 @@ function toSafeIntSeconds(value) {
   return Math.floor(n);
 }
 
+function isValidDateKey(key) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) return false;
+  const [year, month, day] = key.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return (
+    date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day
+  );
+}
+
 function normalizeEntries(entries) {
   if (!isPlainObject(entries)) return {};
   const out = {};
   for (const [k, v] of Object.entries(entries)) {
-    if (typeof k !== "string" || k.length < 8) continue;
+    if (typeof k !== "string" || !isValidDateKey(k)) continue;
     const secs = toSafeIntSeconds(v);
     if (secs > 0) out[k] = secs;
   }

@@ -29,7 +29,11 @@ export function dateFromLocalDateKey(dateKey) {
   const monthIndex = Number(m[2]) - 1;
   const day = Number(m[3]);
   if (!Number.isFinite(year) || !Number.isFinite(monthIndex) || !Number.isFinite(day)) return null;
-  return new Date(year, monthIndex, day);
+  const date = new Date(year, monthIndex, day);
+  if (date.getFullYear() !== year || date.getMonth() !== monthIndex || date.getDate() !== day) {
+    return null;
+  }
+  return date;
 }
 
 /**

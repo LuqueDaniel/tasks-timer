@@ -55,8 +55,8 @@ import { setupErrorReporting } from "./errorReporter.js";
  */
 
 /**
- * Initializes the language (persisted or detected) and applies a translation pass.
- * Dynamic Preact-rendered sections consume i18n keys directly at render time.
+ * Initializes the language from persisted state or browser preferences before the first render.
+ * Preact-rendered sections consume i18n keys directly at render time.
  *
  * @param {Store} store
  * @returns {void}

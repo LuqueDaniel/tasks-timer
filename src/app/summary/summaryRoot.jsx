@@ -1,9 +1,11 @@
 import { TotalTodayValue } from "./components/TotalTodayValue.jsx";
 import { RunningHint } from "./components/RunningHint.jsx";
 import { t } from "../../i18n.js";
+import { useLiveNow } from "../hooks/useLiveNow.js";
 
-/** @param {{ state: object, now: number, todayKey: string }} props */
-export function SummaryRoot({ state, now, todayKey }) {
+/** @param {{ state: object, todayKey: string }} props */
+export function SummaryRoot({ state, todayKey }) {
+  const now = useLiveNow(Boolean(state.running));
   return (
     <section className="summary" aria-labelledby="summaryTitle">
       <h2 id="summaryTitle">{t("summary.title")}</h2>

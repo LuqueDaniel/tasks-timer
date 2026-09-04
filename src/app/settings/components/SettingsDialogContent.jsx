@@ -9,7 +9,7 @@ import { t } from "../../../i18n.js";
  * @property {(theme: string) => void} onThemeChange
  * @property {(language: string) => void} onLanguageChange
  * @property {() => void} onExport
- * @property {(file: File) => Promise<void> | void} onImportFile
+ * @property {(file: File) => Promise<boolean> | boolean} onImportFile
  * @property {() => void} onDeleteAll
  */
 

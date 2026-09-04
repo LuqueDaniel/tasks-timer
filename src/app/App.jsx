@@ -1,51 +1,44 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import { AddTaskRoot } from "./addTask/addTaskRoot.jsx";
+import { AddTaskFields } from "./addTask/components/AddTaskFields.jsx";
 import { SettingsRoot } from "./settings/settingsRoot.jsx";
 import { SummaryRoot } from "./summary/summaryRoot.jsx";
-import { TasksRoot } from "./tasks/tasksRoot.jsx";
+import { TasksSection } from "./tasks/views/TasksSection.jsx";
 import { ToastHost } from "../components/ToastHost.jsx";
-import { applyTranslations, setLanguage as setI18nLanguage, t } from "../i18n.js";
+import { setLanguage as setI18nLanguage, t } from "../i18n.js";
 import { applyThemePreference } from "../theme.js";
 import { formatDateKeyForUser, nowMs, startOfNextLocalDayMs, toLocalDateKey } from "../time.js";
 
 /** @param {{ store: object, handlers: object, settings: object, toastController: object }} props */
 export function App({ store, handlers, settings, toastController }) {
   const [, refresh] = useState(0);
-  const [clockNow, setClockNow] = useState(nowMs);
+  const [todayKey, setTodayKey] = useState(() => toLocalDateKey(nowMs()));
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [resetToken, setResetToken] = useState(0);
   const dialogRef = useRef(null);
   const state = store.getState();
-  const todayKey = toLocalDateKey(clockNow);
-
   useEffect(() => store.subscribe(() => refresh((value) => value + 1)), [store]);
 
   useEffect(() => {
-    const updateClock = () => setClockNow(nowMs());
-    updateClock();
-
-    const intervalId = state.running ? window.setInterval(updateClock, 1000) : null;
+    const updateDay = () => setTodayKey(toLocalDateKey(nowMs()));
     const dayTimeoutId = window.setTimeout(
-      updateClock,
+      updateDay,
       Math.max(0, startOfNextLocalDayMs(nowMs()) - nowMs() + 1),
     );
     const onVisibilityChange = () => {
-      if (document.visibilityState === "visible") updateClock();
+      if (document.visibilityState === "visible") updateDay();
     };
     document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
-      if (intervalId !== null) window.clearInterval(intervalId);
       window.clearTimeout(dayTimeoutId);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, [state.running, todayKey]);
+  }, [todayKey]);
 
   useEffect(() => {
     applyThemePreference(state.ui?.theme ?? "system");
     const language = state.ui?.language === "es" ? "es" : "en";
     setI18nLanguage(language);
-    applyTranslations(document);
     refresh((value) => value + 1);
   }, [state.ui?.theme, state.ui?.language]);
 
@@ -75,6 +68,8 @@ export function App({ store, handlers, settings, toastController }) {
     };
   }, [settingsOpen]);
 
+  const addTaskInputRef = useRef(null);
+
   return (
     <>
       <header className="app-header">
@@ -98,12 +93,12 @@ export function App({ store, handlers, settings, toastController }) {
       </header>
 
       <main className="app">
-        <SummaryRoot state={state} now={clockNow} todayKey={todayKey} />
+        <SummaryRoot state={state} todayKey={todayKey} />
         <section className="add-task" aria-labelledby="addTaskTitle">
-          <AddTaskRoot handlers={handlers} />
+          <AddTaskFields handlers={handlers} inputRef={addTaskInputRef} />
         </section>
         <section>
-          <TasksRoot state={state} handlers={handlers} now={clockNow} todayKey={todayKey} />
+          <TasksSection state={state} handlers={handlers} todayKey={todayKey} />
         </section>
       </main>
 

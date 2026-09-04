@@ -6,19 +6,18 @@ import { TasksEmptyState } from "../components/TasksEmptyState.jsx";
  * @typedef TasksSectionProps
  * @property {{ tasks: Array<unknown> }} state
  * @property {object} handlers
- * @property {number} now
  * @property {string} todayKey
  */
 
 /** @param {TasksSectionProps} props */
-export function TasksSection({ state, handlers, now, todayKey }) {
+export function TasksSection({ state, handlers, todayKey }) {
   return (
     <section aria-label={t("tasks.listAria")}>
       {state.tasks.length === 0 ? (
         <TasksEmptyState />
       ) : (
-        <div id="tasksList" className="tasks">
-          <TaskList state={state} handlers={handlers} now={now} todayKey={todayKey} />
+        <div className="tasks">
+          <TaskList state={state} handlers={handlers} todayKey={todayKey} />
         </div>
       )}
     </section>

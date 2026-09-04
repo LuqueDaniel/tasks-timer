@@ -4,6 +4,7 @@ import { t } from "../../../i18n.js";
 import { useCallback } from "preact/hooks";
 import { memo } from "preact/compat";
 import { TaskHistory } from "./TaskHistory.jsx";
+import { useLiveNow } from "../../hooks/useLiveNow.js";
 
 function TaskCardBase({
   state,
@@ -13,10 +14,10 @@ function TaskCardBase({
   showAll,
   isRunning,
   runningStartedAt,
-  now,
   todayKey,
   handlers,
 }) {
+  const now = useLiveNow(isRunning);
   const todaySecs = taskTodaySeconds(state, task, todayKey, now);
   const totalSecs = taskTotalSecondsLive(state, task, now);
 
@@ -140,8 +141,7 @@ function areTaskCardPropsEqual(previous, next) {
     previous.runningStartedAt === next.runningStartedAt &&
     previous.language === next.language &&
     previous.todayKey === next.todayKey &&
-    previous.handlers === next.handlers &&
-    (!next.isRunning || previous.now === next.now)
+    previous.handlers === next.handlers
   );
 }
 
