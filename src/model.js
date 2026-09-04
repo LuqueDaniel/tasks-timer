@@ -118,8 +118,9 @@ export function stopRunning(store) {
     if (!task) return;
 
     if (end > startedAt) {
-      task.entries ??= {};
-      addDurationSplitByLocalDay(task.entries, startedAt, end);
+      const nextEntries = { ...(task.entries ?? {}) };
+      addDurationSplitByLocalDay(nextEntries, startedAt, end);
+      task.entries = nextEntries;
     }
   });
 }
@@ -138,8 +139,9 @@ export function startTask(store, taskId) {
     if (state.running && state.running.taskId !== taskId) {
       const prevTask = getTask(state, state.running.taskId);
       if (prevTask && now > state.running.startedAt) {
-        prevTask.entries ??= {};
-        addDurationSplitByLocalDay(prevTask.entries, state.running.startedAt, now);
+        const nextEntries = { ...(prevTask.entries ?? {}) };
+        addDurationSplitByLocalDay(nextEntries, state.running.startedAt, now);
+        prevTask.entries = nextEntries;
       }
     }
 
@@ -172,7 +174,10 @@ export function deleteHistoryEntry(store, taskId, dateKey) {
   store.mutate((state) => {
     const task = getTask(state, taskId);
     if (!task?.entries) return;
-    delete task.entries[dateKey];
+
+    const nextEntries = { ...task.entries };
+    delete nextEntries[dateKey];
+    task.entries = nextEntries;
   });
 }
 
@@ -189,8 +194,10 @@ export function restoreHistoryEntry(store, snapshot) {
   store.mutate((state) => {
     const task = getTask(state, taskId);
     if (!task) return;
-    task.entries ??= {};
-    task.entries[dateKey] = (task.entries[dateKey] ?? 0) + seconds;
+
+    const nextEntries = { ...(task.entries ?? {}) };
+    nextEntries[dateKey] = (nextEntries[dateKey] ?? 0) + seconds;
+    task.entries = nextEntries;
   });
 }
 
@@ -285,7 +292,9 @@ export function setTheme(store, theme) {
 }
 
 export function setLanguage(store, language) {
-  const raw = String(language ?? "").trim().toLowerCase();
+  const raw = String(language ?? "")
+    .trim()
+    .toLowerCase();
   const base = raw.split("-")[0];
   const next = base === "es" || base === "en" ? base : "en";
 

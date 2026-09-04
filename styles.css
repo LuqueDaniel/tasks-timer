@@ -8,7 +8,6 @@
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 
   --primary: #6aa9ff;
-  --primary-2: #2f7cf6;
   --danger: #ff6b6b;
   --success: #49d17c;
 
@@ -77,13 +76,20 @@ html {
 
 body {
   margin: 0;
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
-    Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Helvetica,
+    Arial,
+    "Apple Color Emoji",
+    "Segoe UI Emoji";
   color: var(--text);
   background: transparent;
 }
 
-/* Decorative background fixed to viewport (doesn't "repeat" on scroll) */
 body::before {
   content: "";
   position: fixed;
@@ -193,8 +199,6 @@ h2 {
   gap: 10px;
 }
 
-/* Form controls (inputs/selects). Prefer using `.control` for future fields. */
-.control,
 input[type="text"],
 select {
   width: 100%;
@@ -225,7 +229,6 @@ select {
   background-repeat: no-repeat;
 }
 
-.control:focus,
 input[type="text"]:focus,
 select:focus {
   border-color: color-mix(in srgb, var(--primary) 65%, var(--border));

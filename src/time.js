@@ -29,14 +29,21 @@ export function dateFromLocalDateKey(dateKey) {
   const monthIndex = Number(m[2]) - 1;
   const day = Number(m[3]);
   if (!Number.isFinite(year) || !Number.isFinite(monthIndex) || !Number.isFinite(day)) return null;
-  return new Date(year, monthIndex, day);
+  const date = new Date(year, monthIndex, day);
+  if (date.getFullYear() !== year || date.getMonth() !== monthIndex || date.getDate() !== day) {
+    return null;
+  }
+  return date;
 }
 
 /**
  * Formats a YYYY-MM-DD date key using the user's browser locale.
  * Storage keys remain YYYY-MM-DD; this is display-only.
  */
-export function formatDateKeyForUser(dateKey, options = { year: "numeric", month: "2-digit", day: "2-digit" }) {
+export function formatDateKeyForUser(
+  dateKey,
+  options = { year: "numeric", month: "2-digit", day: "2-digit" },
+) {
   const d = dateFromLocalDateKey(dateKey);
   if (!d) return String(dateKey ?? "");
   try {
