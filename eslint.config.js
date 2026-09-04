@@ -1,7 +1,7 @@
 import js from "@eslint/js";
 import globals from "globals";
-import jsxA11y from "eslint-plugin-jsx-a11y";
-import reactPlugin from "eslint-plugin-react";
+import reactDom from "eslint-plugin-react-dom";
+import reactX from "eslint-plugin-react-x";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
 import prettier from "eslint-config-prettier";
 
@@ -28,9 +28,9 @@ export default [
       },
     },
     plugins: {
-      react: reactPlugin,
+      "react-dom": reactDom,
+      "react-x": reactX,
       "react-hooks": reactHooksPlugin,
-      "jsx-a11y": jsxA11y,
     },
     settings: {
       react: {
@@ -38,16 +38,16 @@ export default [
       },
     },
     rules: {
-      ...reactPlugin.configs.recommended.rules,
+      ...reactX.configs.recommended.rules,
       ...reactHooksPlugin.configs.recommended.rules,
-      ...jsxA11y.configs.recommended.rules,
+      ...reactDom.configs.recommended.rules,
 
       // Preact uses the automatic JSX runtime (no React import in scope).
-      "react/react-in-jsx-scope": "off",
-      "react/jsx-uses-react": "off",
+      "react-x/react-in-jsx-scope": "off",
+      "react-x/jsx-uses-react": "off",
 
       // This project doesn't use runtime PropTypes.
-      "react/prop-types": "off",
+      "react-x/prop-types": "off",
 
       "no-unused-vars": [
         "warn",
